@@ -1,0 +1,25 @@
+defmodule KantoxCashier.Campaign.BulkPurchaseCoffeeTest do
+  use KantoxCashier.DataCase
+
+  alias KantoxCashier.Campaign.BulkPurchaseCoffee
+
+  test "it should not give discount" do
+    cart = create_shoping_cart() |> add_coffee()
+
+    assert %Cart{
+             discounts: []
+           } = BulkPurchaseCoffee.apply(cart)
+
+    cart = cart |> add_strawberry()
+    assert %Cart{discounts: []} = BulkPurchaseCoffee.apply(cart)
+  end
+
+  test "it should give discount when there is more than 2 coffee" do
+    cart =
+      create_shoping_cart() |> add_coffee(3)
+
+    discount_amount = 3 * 3.75
+
+    assert %Cart{discounts: [^discount_amount]} = BulkPurchaseCoffee.apply(cart)
+  end
+end
