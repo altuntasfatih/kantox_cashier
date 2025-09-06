@@ -20,7 +20,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     product_summary =
       Enum.map(cart.products, fn {code, {count, %Product{price: price}}} ->
         %{
-          product: Product.code_to_string(code),
+          name: Product.code_to_string(code),
           count: count,
           price: price,
           total: Float.round(count * price, 2)
@@ -29,12 +29,12 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
 
     %{
       user_id: cart.user_id,
-      products: product_summary,
-      shopping_cart_amount: cart.amount,
+      product_summary: product_summary,
       discount_summary:
         Enum.map(cart.discounts, fn {name, amount} ->
           %{discount_name: name, discount_amount: amount}
         end),
+      shopping_cart_amount: cart.amount,
       total_discounts: cart.total_discounts,
       final_amount: cart.final_amount
     }

@@ -159,10 +159,10 @@ defmodule KantoxCashierTest do
       # when & then
       assert %{
                user_id: ^user_id,
-               products: [
-                 %{product: "Coffee", count: 2, price: 11.23, total: 22.46},
-                 %{product: "Strawberry", count: 3, price: 5.0, total: 15.0},
-                 %{product: "Green Tea", count: 2, price: 3.11, total: 6.22}
+               product_summary: [
+                 %{name: "Coffee", count: 2, price: 11.23, total: 22.46},
+                 %{name: "Strawberry", count: 3, price: 5.0, total: 15.0},
+                 %{name: "Green Tea", count: 2, price: 3.11, total: 6.22}
                ],
                discount_summary: [
                  %{discount_amount: 3.11, discount_name: "Buy One Get One Free Green Tea"},

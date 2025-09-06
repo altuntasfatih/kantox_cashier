@@ -2,265 +2,302 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
   use KantoxCashier.DataCase
 
   alias KantoxCashier.ShoppingCart.CartProcessor
-  alias KantoxCashier.ShoppingCart.Cart
-  alias KantoxCashier.Product
+
+  @given_test_scenarios %{
+    scenario_1: %{
+      items: [:GR1, :SR1, :GR1, :GR1, :CF1],
+      expected_discounts: [{"Buy One Get One Free Green Tea", 3.11}],
+      total_amount: 25.56,
+      total_discounts: 3.11,
+      final_amount: 22.45
+    },
+    scenario_2: %{
+      items: [:GR1, :GR1],
+      expected_discounts: [{"Buy One Get One Free Green Tea", 3.11}],
+      total_amount: 6.22,
+      total_discounts: 3.11,
+      final_amount: 3.11
+    },
+    scenario_3: %{
+      items: [:SR1, :SR1, :GR1, :SR1],
+      expected_discounts: [{"Bulk Purchase Strawberry", 1.5}],
+      total_amount: 18.11,
+      total_discounts: 1.5,
+      final_amount: 16.61
+    },
+    scenario_4: %{
+      items: [:GR1, :CF1, :SR1, :CF1, :CF1],
+      expected_discounts: [
+        {"Bulk Purchase Coffee", 11.25}
+      ],
+      total_amount: 41.8,
+      total_discounts: 11.25,
+      final_amount: 30.55
+    },
+    # following are mine
+    scenario_5: %{
+      items: [:GR1, :CF1, :SR1, :CF1, :CF1, :GR1],
+      expected_discounts: [
+        {"Bulk Purchase Coffee", 11.25},
+        {"Buy One Get One Free Green Tea", 3.11}
+      ],
+      total_amount: 44.91,
+      total_discounts: 14.36,
+      final_amount: 30.55
+    },
+    scenario_6: %{
+      items: [:GR1, :SR1, :SR1, :SR1, :GR1],
+      expected_discounts: [
+        {"Buy One Get One Free Green Tea", 3.11},
+        {"Bulk Purchase Strawberry", 1.5}
+      ],
+      total_amount: 21.22,
+      total_discounts: 4.61,
+      final_amount: 16.61
+    },
+    scenario_7: %{
+      items: [:GR1, :CF1, :SR1, :CF1, :CF1, :GR1, :SR1, :SR1],
+      expected_discounts: [
+        {"Bulk Purchase Coffee", 11.25},
+        {"Buy One Get One Free Green Tea", 3.11},
+        {"Bulk Purchase Strawberry", 1.5}
+      ],
+      total_amount: 54.91,
+      total_discounts: 15.86,
+      final_amount: 39.05
+    },
+    scenario_preview: %{
+      items: [:GR1, :CF1, :SR1, :CF1, :CF1, :GR1],
+      discount_summary: [
+        %{discount_amount: 11.25, discount_name: "Bulk Purchase Coffee"},
+        %{discount_amount: 3.11, discount_name: "Buy One Get One Free Green Tea"}
+      ],
+      product_summary: [
+        %{count: 3, total: 33.69, name: "Coffee", price: 11.23},
+        %{count: 1, total: 5.0, name: "Strawberry", price: 5.0},
+        %{count: 2, total: 6.22, name: "Green Tea", price: 3.11}
+      ],
+      total_amount: 44.91,
+      total_discounts: 14.36,
+      final_amount: 30.55
+    }
+  }
 
   @user_id 1
-
   describe "campaign integration scenarios" do
     setup do
-      {:ok, user_id: @user_id}
+      {:ok, cart: CartProcessor.create_shopping_cart(@user_id)}
     end
 
-    test "add GR1,SR1,GR1,GR1,CF1 - triggers green tea discount", %{user_id: user_id} do
+    test "scenario 1", %{cart: cart} do
       # given
-      cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_strawberry()
-        |> add_greentea()
-        |> add_greentea()
-        |> add_coffee()
+      scenario = @given_test_scenarios.scenario_1
+      expected_discounts = scenario.expected_discounts
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
 
-      # then
-      assert cart == %Cart{
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
                products: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {3, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: user_id,
-               amount: 25.56,
-               total_discounts: 3.11,
-               final_amount: 22.45,
-               discounts: [{"Buy One Get One Free Green Tea", 3.11}]
-             }
+               amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount,
+               discounts: ^expected_discounts
+             } = cart
     end
 
-    test "add GR1,GR1 - triggers green tea discount", %{user_id: user_id} do
+    test "scenario 2", %{cart: cart} do
       # given
-      cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_greentea()
+      scenario = @given_test_scenarios.scenario_2
+      expected_discounts = scenario.expected_discounts
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
 
-      # then
-      assert cart == %Cart{
-               user_id: user_id,
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
                products: %{
                  GR1: {2, %Product{code: :GR1, price: 3.11}}
                },
-               discounts: [{"Buy One Get One Free Green Tea", 3.11}],
-               amount: 6.22,
-               total_discounts: 3.11,
-               final_amount: 3.11
-             }
+               amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount,
+               discounts: ^expected_discounts
+             } = cart
     end
 
-    test "add SR1,SR1,GR1,SR1 - triggers strawberry discount", %{user_id: user_id} do
+    test "scenario 3", %{cart: cart} do
       # given
-      cart =
-        create_cart(user_id)
-        |> add_strawberry()
-        |> add_strawberry()
-        |> add_greentea()
-        |> add_strawberry()
+      scenario = @given_test_scenarios.scenario_3
+      expected_discounts = scenario.expected_discounts
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
 
-      # then
-      assert cart == %Cart{
-               user_id: user_id,
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
                products: %{
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               discounts: [{"Bulk Purchase Strawberry", 1.5}],
-               amount: 18.11,
-               total_discounts: 1.5,
-               final_amount: 16.61
-             }
+               discounts: ^expected_discounts,
+               amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount
+             } = cart
     end
 
-    test "add GR1,CF1,SR1,CF1,CF1 - triggers coffee discount", %{user_id: user_id} do
+    test "scenario 4", %{cart: cart} do
       # given
-      cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_coffee()
-        |> add_strawberry()
-        |> add_coffee()
-        |> add_coffee()
+      scenario = @given_test_scenarios.scenario_4
+      expected_discounts = scenario.expected_discounts
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
 
-      # then
-      assert cart == %Cart{
-               user_id: user_id,
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
+               user_id: @user_id,
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               discounts: [{"Bulk Purchase Coffee", 11.25}],
-               amount: 41.8,
-               total_discounts: 11.25,
-               final_amount: 30.55
-             }
+               discounts: ^expected_discounts,
+               amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount
+             } = cart
     end
 
-    test "add GR1,SR1,GR1,GR1,CF1 and then remove SR1, GR1", %{user_id: user_id} do
+    test "scenario 5", %{cart: cart} do
       # given
+      scenario = @given_test_scenarios.scenario_5
+      expected_discounts = scenario.expected_discounts
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
+
       cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_strawberry()
-        |> add_greentea()
-        |> add_greentea()
-        |> add_coffee()
-        |> remove_strawberry()
-        |> remove_greentea()
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
 
-      # then
-      assert cart == %Cart{
-               user_id: user_id,
-               products: %{
-                 CF1: {1, %Product{code: :CF1, price: 11.23}},
-                 GR1: {2, %Product{code: :GR1, price: 3.11}}
-               },
-               discounts: [{"Buy One Get One Free Green Tea", 3.11}],
-               amount: 17.45,
-               total_discounts: 3.11,
-               final_amount: 14.34
-             }
-    end
-
-    test "add GR1,CF1,SR1,CF1,CF1,GR1 - triggers coffee and green tea discounts", %{
-      user_id: user_id
-    } do
-      # given
-      cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_coffee()
-        |> add_strawberry()
-        |> add_coffee()
-        |> add_coffee()
-        |> add_greentea()
-
-      # then
-      assert cart == %Cart{
-               user_id: user_id,
+      # when & then
+      assert %Cart{
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {2, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               discounts: [
-                 {"Bulk Purchase Coffee", 11.25},
-                 {"Buy One Get One Free Green Tea", 3.11}
-               ],
-               amount: 44.91,
-               total_discounts: 14.36,
-               final_amount: 30.55
-             }
+               discounts: ^expected_discounts,
+               amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount
+             } = cart
     end
 
-    test "add GR1,CF1,SR1,CF1,CF1,GR1,SR1,SR1 - it triggers all discounts", %{user_id: user_id} do
+    test "scenario 6", %{cart: cart} do
       # given
-      cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_coffee()
-        |> add_strawberry()
-        |> add_coffee()
-        |> add_coffee()
-        |> add_greentea()
-        |> add_strawberry()
-        |> add_strawberry()
+      scenario = @given_test_scenarios.scenario_6
+      expected_discounts = scenario.expected_discounts
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
 
-      # then
-      assert cart == %Cart{
-               user_id: user_id,
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
+               products: %{
+                 GR1: {2, %Product{code: :GR1, price: 3.11}},
+                 SR1: {3, %Product{code: :SR1, price: 5.0}}
+               },
+               discounts: ^expected_discounts,
+               amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount
+             } = cart
+    end
+
+    test "scenario 7", %{cart: cart} do
+      # given
+      scenario = @given_test_scenarios.scenario_7
+      expected_discounts = scenario.expected_discounts
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
+
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {2, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               discounts: [
-                 {"Bulk Purchase Coffee", 11.25},
-                 {"Buy One Get One Free Green Tea", 3.11},
-                 {"Bulk Purchase Strawberry", 1.5}
-               ],
-               amount: 54.91,
-               total_discounts: 15.86,
-               final_amount: 39.05
-             }
+               discounts: ^expected_discounts,
+               amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount
+             } = cart
     end
 
-    test "add GR1,CF1,SR1,CF1,CF1,GR1,SR1,SR1 and remove GR1,CF1", %{user_id: user_id} do
+    test "scenario preview", %{cart: cart} do
       # given
-      cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_coffee()
-        |> add_strawberry()
-        |> add_coffee()
-        |> add_coffee()
-        |> add_greentea()
-        |> add_strawberry()
-        |> add_strawberry()
-        |> remove_greentea()
-        |> remove_coffee()
+      scenario = @given_test_scenarios.scenario_preview
+      expected_product_summary = scenario.product_summary
+      expected_discount_summary = scenario.discount_summary
+      expected_total_amount = scenario.total_amount
+      expected_total_discounts = scenario.total_discounts
+      expected_final_amount = scenario.final_amount
 
-      # then
-      assert cart == %Cart{
-               user_id: user_id,
-               discounts: [{"Bulk Purchase Strawberry", 1.5}],
-               products: %{
-                 CF1: {2, %Product{code: :CF1, price: 11.23}},
-                 GR1: {1, %Product{code: :GR1, price: 3.11}},
-                 SR1: {3, %Product{code: :SR1, price: 5.0}}
-               },
-               amount: 40.57,
-               total_discounts: 1.5,
-               final_amount: 39.07
-             }
-    end
-
-    test "add GR1,CF1,SR1,CF1,CF1,GR1 and them preview ", %{user_id: user_id} do
-      # given
       cart =
-        create_cart(user_id)
-        |> add_greentea()
-        |> add_coffee()
-        |> add_strawberry()
-        |> add_coffee()
-        |> add_coffee()
-        |> add_greentea()
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Product.new(item))
+        end)
 
       # when & then
       assert %{
-               final_amount: 30.55,
-               products: [
-                 %{count: 3, total: 33.69, product: "Coffee", price: 11.23},
-                 %{count: 1, total: 5.0, product: "Strawberry", price: 5.0},
-                 %{count: 2, total: 6.22, product: "Green Tea", price: 3.11}
-               ],
-               total_discounts: 14.36,
-               user_id: user_id,
-               discount_summary: [
-                 %{discount_amount: 11.25, discount_name: "Bulk Purchase Coffee"},
-                 %{discount_amount: 3.11, discount_name: "Buy One Get One Free Green Tea"}
-               ],
-               shopping_cart_amount: 44.91
-             } == CartProcessor.preview(cart)
+               user_id: @user_id,
+               discount_summary: ^expected_discount_summary,
+               product_summary: ^expected_product_summary,
+               shopping_cart_amount: ^expected_total_amount,
+               total_discounts: ^expected_total_discounts,
+               final_amount: ^expected_final_amount
+             } = CartProcessor.preview(cart)
     end
   end
-
-  # Helper functions
-  defp create_cart(user_id), do: CartProcessor.create_shopping_cart(user_id)
-  defp add_coffee(cart), do: CartProcessor.add_item(cart, Product.coffee())
-  defp add_strawberry(cart), do: CartProcessor.add_item(cart, Product.strawberry())
-  defp add_greentea(cart), do: CartProcessor.add_item(cart, Product.green_tea())
-
-  defp remove_greentea(cart), do: CartProcessor.remove_item(cart, :GR1)
-  defp remove_coffee(cart), do: CartProcessor.remove_item(cart, :CF1)
-  defp remove_strawberry(cart), do: CartProcessor.remove_item(cart, :SR1)
 end

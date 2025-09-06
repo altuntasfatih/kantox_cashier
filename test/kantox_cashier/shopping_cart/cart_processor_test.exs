@@ -168,7 +168,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     test "should preview empty cart", %{cart: cart} do
       assert %{
                user_id: @user_id,
-               products: [],
+               product_summary: [],
                shopping_cart_amount: 0.0,
                discount_summary: [],
                total_discounts: 0.0,
@@ -185,15 +185,15 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       # when & then
       assert %{
                user_id: @user_id,
-               products: [
+               product_summary: [
                  %{
-                   product: "Coffee",
+                   name: "Coffee",
                    count: 1,
                    price: 11.23,
                    total: 11.23
                  },
                  %{
-                   product: "Green Tea",
+                   name: "Green Tea",
                    count: 1,
                    price: 3.11,
                    total: 3.11
@@ -216,9 +216,9 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       # when & then
       assert %{
                user_id: @user_id,
-               products: [
+               product_summary: [
                  %{
-                   product: "Strawberry",
+                   name: "Strawberry",
                    count: 3,
                    price: 5.0,
                    total: 15.0
