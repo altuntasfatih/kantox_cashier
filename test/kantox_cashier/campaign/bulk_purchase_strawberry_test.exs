@@ -3,18 +3,18 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberryTest do
   alias KantoxCashier.Campaign.BulkPurchaseStrawberry
 
   test "it should not give discount" do
-    cart = create_shoping_cart() |> add_strawberry()
+    cart = create_shoping_cart() |> add_strawberry_to_cart()
 
     assert %Cart{
              discounts: []
            } = BulkPurchaseStrawberry.apply(cart)
 
-    cart = cart |> add_greentea()
+    cart = cart |> add_greentea_to_cart()
     assert %Cart{discounts: []} = BulkPurchaseStrawberry.apply(cart)
   end
 
   test "it should give discount when there is more than 2 strawberry" do
-    cart = create_shoping_cart() |> add_strawberry(4)
+    cart = create_shoping_cart() |> add_strawberry_to_cart(4)
 
     discount_amount = 4 * 0.50
 

@@ -15,14 +15,14 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
     test "add_item/2" do
       cart = CartProcessor.create_shopping_cart(1)
-      cart = CartProcessor.add_item(cart, :CF1)
+      cart = CartProcessor.add_item(cart, Product.new(:CF1))
 
       assert %Cart{
                products: %{CF1: {1, %Product{code: :CF1, price: 11.23}}},
                user_id: 1
              } = cart
 
-      cart = CartProcessor.add_item(cart, :SR1)
+      cart = CartProcessor.add_item(cart, Product.new(:SR1))
 
       assert %Cart{
                products: %{
@@ -32,7 +32,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: 1
              } = cart
 
-      cart = CartProcessor.add_item(cart, :GR1)
+      cart = CartProcessor.add_item(cart, Product.new(:GR1))
 
       assert %Cart{
                products: %{
@@ -50,15 +50,15 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
                user_id: 1
-             } = CartProcessor.add_item(cart, :CF1)
+             } = CartProcessor.add_item(cart, Product.new(:CF1))
     end
 
     test "remove_item/2" do
       cart =
         CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:GR1)
+        |> CartProcessor.add_item(Product.new(:CF1))
+        |> CartProcessor.add_item(Product.new(:CF1))
+        |> CartProcessor.add_item(Product.new(:GR1))
 
       assert %Cart{
                products: %{
@@ -78,21 +78,25 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
   describe "test inputs" do
     test "add GR1,SR1,GR1,GR1,CF1" do
-      cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:CF1)
+      # given
+      user_id = 1
 
+      cart =
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_strawberry()
+        |> add_greentea()
+        |> add_greentea()
+        |> add_coffee()
+
+      # when & then
       assert cart == %Cart{
                products: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {3, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 25.56,
                total: 22.45,
                discounts: [3.11]
@@ -100,16 +104,20 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "add GR1,GR1" do
-      cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:GR1)
+      # given
+      user_id = 1
 
+      cart =
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_greentea()
+
+      # when & then
       assert cart == %Cart{
                products: %{
                  GR1: {2, %Product{code: :GR1, price: 3.11}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 6.22,
                total: 3.11,
                discounts: [3.11]
@@ -117,19 +125,23 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "add SR1,SR1,GR1,SR1" do
-      cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:SR1)
+      # given
+      user_id = 1
 
+      cart =
+        create_cart(user_id)
+        |> add_strawberry()
+        |> add_strawberry()
+        |> add_greentea()
+        |> add_strawberry()
+
+      # when & then
       assert cart == %Cart{
                products: %{
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 18.11,
                total: 16.61,
                discounts: [1.5]
@@ -137,21 +149,25 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "add GR1,CF1,SR1,CF1,CF1" do
-      cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:CF1)
+      # given
+      user_id = 1
 
+      cart =
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_coffee()
+        |> add_strawberry()
+        |> add_coffee()
+        |> add_coffee()
+
+      # when & then
       assert cart == %Cart{
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 41.8,
                total: 30.55,
                discounts: [11.25]
@@ -159,22 +175,26 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "add GR1,SR1,GR1,GR1,CF1 and then remove SR1, GR1" do
-      cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.remove_item(:SR1)
-        |> CartProcessor.remove_item(:GR1)
+      # given
+      user_id = 1
 
+      cart =
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_strawberry()
+        |> add_greentea()
+        |> add_greentea()
+        |> add_coffee()
+        |> remove_strawberry()
+        |> remove_greentea()
+
+      # when & then
       assert cart == %Cart{
                products: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {2, %Product{code: :GR1, price: 3.11}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 17.45,
                total: 14.34,
                discounts: [3.11]
@@ -182,14 +202,17 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "GR1,CF1,SR1,CF1,CF1,GR1" do
+      # given
+      user_id = 1
+
       cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:GR1)
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_coffee()
+        |> add_strawberry()
+        |> add_coffee()
+        |> add_coffee()
+        |> add_greentea()
 
       assert cart == %Cart{
                products: %{
@@ -197,7 +220,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  GR1: {2, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 44.91,
                total: 30.55,
                discounts: [3.11, 11.25]
@@ -205,24 +228,28 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "GR1,CF1,SR1,CF1,CF1,GR1,SR1,SR1" do
-      cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:SR1)
+      # given
+      user_id = 1
 
+      cart =
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_coffee()
+        |> add_strawberry()
+        |> add_coffee()
+        |> add_coffee()
+        |> add_greentea()
+        |> add_strawberry()
+        |> add_strawberry()
+
+      # when & then
       assert cart == %Cart{
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {2, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 54.91,
                total: 39.05,
                discounts: [1.50, 3.11, 11.25]
@@ -230,18 +257,21 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "GR1,CF1,SR1,CF1,CF1,GR1,SR1,SR1 and remove GR1,CF1" do
+      # given
+      user_id = 1
+
       cart =
-        CartProcessor.create_shopping_cart(1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:CF1)
-        |> CartProcessor.add_item(:GR1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.add_item(:SR1)
-        |> CartProcessor.remove_item(:GR1)
-        |> CartProcessor.remove_item(:CF1)
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_coffee()
+        |> add_strawberry()
+        |> add_coffee()
+        |> add_coffee()
+        |> add_greentea()
+        |> add_strawberry()
+        |> add_strawberry()
+        |> remove_greentea()
+        |> remove_coffee()
 
       assert cart == %Cart{
                products: %{
@@ -249,11 +279,19 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: 1,
+               user_id: user_id,
                amount: 40.57,
                total: 39.07,
                discounts: [1.50]
              }
     end
   end
+
+  defp create_cart(user_id), do: CartProcessor.create_shopping_cart(user_id)
+  defp add_coffee(chart), do: CartProcessor.add_item(chart, Product.new(:CF1))
+  defp add_strawberry(chart), do: CartProcessor.add_item(chart, Product.new(:SR1))
+  defp add_greentea(chart), do: CartProcessor.add_item(chart, Product.new(:GR1))
+  defp remove_greentea(chart), do: CartProcessor.remove_item(chart, :GR1)
+  defp remove_coffee(chart), do: CartProcessor.remove_item(chart, :CF1)
+  defp remove_strawberry(chart), do: CartProcessor.remove_item(chart, :SR1)
 end

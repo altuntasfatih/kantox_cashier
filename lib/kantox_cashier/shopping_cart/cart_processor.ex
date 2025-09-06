@@ -6,13 +6,6 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     Cart.new(user_id)
   end
 
-  # todo later deprecate this function
-  def add_item(cart, product_code) when is_atom(product_code) do
-    with %Product{} = product <- Product.new(product_code) do
-      add_item(cart, product)
-    end
-  end
-
   def add_item(cart, %Product{} = product) do
     Cart.add_product(cart, product)
     |> apply_campaigns()
