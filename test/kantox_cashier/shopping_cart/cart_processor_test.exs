@@ -1,4 +1,4 @@
-defmodule KantoxCashierTest do
+defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
   use KantoxCashier.DataCase
   alias KantoxCashier.ShoppingCart.CartProcessor
 

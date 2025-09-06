@@ -20,11 +20,15 @@ defmodule KantoxCashier.ShoppingCart.UserCart do
     {:reply, updated_cart, updated_cart}
   end
 
+  def handle_call({:get_cart}, _, state) do
+    {:reply, state, state}
+  end
+
   def handle_call({:checkout}, _from, cart) do
     {:reply, CartProcessor.checkout(cart), cart}
   end
 
   defp via_tuple(user_id) do
-    {:via, Registry, {__MODULE__, user_id}}
+    {:via, Registry, {KantoxCashier.ShoppingCart.CartRegistry, {__MODULE__, user_id}}}
   end
 end

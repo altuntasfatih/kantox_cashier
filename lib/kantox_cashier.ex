@@ -1,10 +1,11 @@
 defmodule KantoxCashier.Cashier do
+  alias KantoxCashier.Product
   alias KantoxCashier.ShoppingCart.CartRegistry
 
   def start(user_id) when is_integer(user_id) do
     case lookup_cart(user_id) do
       {:error, :cart_not_found} ->
-        CartRegistry.create_shoping_cart(user_id)
+        create_shopping_cart(user_id)
 
       {:ok, pid} ->
         GenServer.call(pid, {:get_cart})
@@ -12,8 +13,9 @@ defmodule KantoxCashier.Cashier do
   end
 
   def add_item(user_id, product_code) when is_integer(user_id) do
-    with {:ok, pid} <- lookup_cart(user_id) do
-      GenServer.call(pid, {:add_item, product_code})
+    with %Product{} = product <- Product.new(product_code),
+         {:ok, pid} <- lookup_cart(user_id) do
+      GenServer.call(pid, {:add_item, product})
     end
   end
 
@@ -31,6 +33,12 @@ defmodule KantoxCashier.Cashier do
 
   def get_cart(user_id) when is_integer(user_id) do
     with {:ok, pid} <- lookup_cart(user_id) do
+      GenServer.call(pid, {:get_cart})
+    end
+  end
+
+  defp create_shopping_cart(user_id) when is_integer(user_id) do
+    with {:ok, pid} <- CartRegistry.create_shopping_cart(user_id) do
       GenServer.call(pid, {:get_cart})
     end
   end

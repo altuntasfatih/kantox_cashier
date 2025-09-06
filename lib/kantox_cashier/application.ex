@@ -3,8 +3,8 @@ defmodule KantoxCashier.Application do
 
   def start(_type, _args) do
     children = [
-      {Registry, keys: :unique, name: KantoxCashier.ShopingCart.CartRegistry},
-      {DynamicSupervisor, name: KantoxCashier.ShopingCart.CartSupervisor, strategy: :one_for_one}
+      {Registry, keys: :unique, name: KantoxCashier.ShoppingCart.CartRegistry},
+      {DynamicSupervisor, name: KantoxCashier.ShoppingCart.CartSupervisor, strategy: :one_for_one}
     ]
 
     opts = [strategy: :one_for_one, name: KantoxCashier.Supervisor]
