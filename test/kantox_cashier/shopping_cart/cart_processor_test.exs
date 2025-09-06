@@ -1,4 +1,7 @@
 defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
+  alias KantoxCashier.Campaign.BulkPurchaseStrawberry
+  alias KantoxCashier.Campaign.BuyOneGetOneFreeGreentea
+  alias KantoxCashier.Campaign.BulkPurchaseCoffee
   use KantoxCashier.DataCase
   alias KantoxCashier.ShoppingCart.CartProcessor
 
@@ -99,7 +102,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 25.56,
                total: 22.45,
-               discounts: [3.11]
+               discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}]
              }
     end
 
@@ -120,7 +123,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 6.22,
                total: 3.11,
-               discounts: [3.11]
+               discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}]
              }
     end
 
@@ -144,7 +147,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 18.11,
                total: 16.61,
-               discounts: [1.5]
+               discounts: [{BulkPurchaseStrawberry.name(), 1.5}]
              }
     end
 
@@ -170,7 +173,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 41.8,
                total: 30.55,
-               discounts: [11.25]
+               discounts: [{BulkPurchaseCoffee.name(), 11.25}]
              }
     end
 
@@ -197,7 +200,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 17.45,
                total: 14.34,
-               discounts: [3.11]
+               discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}]
              }
     end
 
@@ -214,6 +217,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
         |> add_coffee()
         |> add_greentea()
 
+      # when & then
       assert cart == %Cart{
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
@@ -223,7 +227,10 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 44.91,
                total: 30.55,
-               discounts: [3.11, 11.25]
+               discounts: [
+                 {BulkPurchaseCoffee.name(), 11.25},
+                 {BuyOneGetOneFreeGreentea.name(), 3.11}
+               ]
              }
     end
 
@@ -252,7 +259,11 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 54.91,
                total: 39.05,
-               discounts: [1.50, 3.11, 11.25]
+               discounts: [
+                 {BulkPurchaseCoffee.name(), 11.25},
+                 {BuyOneGetOneFreeGreentea.name(), 3.11},
+                 {BulkPurchaseStrawberry.name(), 1.5}
+               ]
              }
     end
 
@@ -273,6 +284,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
         |> remove_greentea()
         |> remove_coffee()
 
+      # when & then
       assert cart == %Cart{
                products: %{
                  CF1: {2, %Product{code: :CF1, price: 11.23}},
@@ -282,7 +294,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: user_id,
                amount: 40.57,
                total: 39.07,
-               discounts: [1.50]
+               discounts: [{BulkPurchaseStrawberry.name(), 1.5}]
              }
     end
   end

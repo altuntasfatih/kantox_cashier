@@ -14,4 +14,8 @@ defmodule KantoxCashier.Product do
   def price(:CF1), do: Application.get_env(:kantox_cashier, :products)[:CF1]
   def price(:GR1), do: Application.get_env(:kantox_cashier, :products)[:GR1]
   def price(:SR1), do: Application.get_env(:kantox_cashier, :products)[:SR1]
+
+  def code_to_string(:CF1), do: "Coffee"
+  def code_to_string(:GR1), do: "Green Tea"
+  def code_to_string(:SR1), do: "Strawberry"
 end

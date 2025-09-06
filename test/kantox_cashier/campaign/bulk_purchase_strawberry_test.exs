@@ -17,7 +17,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberryTest do
     cart = create_shoping_cart() |> add_strawberry_to_cart(4)
 
     discount_amount = 4 * 0.50
-
-    assert %Cart{discounts: [^discount_amount]} = BulkPurchaseStrawberry.apply(cart)
+    name = BulkPurchaseStrawberry.name()
+    assert %Cart{discounts: [{^name, ^discount_amount}]} = BulkPurchaseStrawberry.apply(cart)
   end
 end

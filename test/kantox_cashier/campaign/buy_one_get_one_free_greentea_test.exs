@@ -19,7 +19,8 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       |> add_greentea_to_cart(3)
 
     discount_amount = 1 * 3.11
+    name = BuyOneGetOneFreeGreentea.name()
 
-    assert %Cart{discounts: [^discount_amount]} = BuyOneGetOneFreeGreentea.apply(cart)
+    assert %Cart{discounts: [{^name, ^discount_amount}]} = BuyOneGetOneFreeGreentea.apply(cart)
   end
 end

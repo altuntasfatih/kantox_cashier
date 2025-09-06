@@ -19,7 +19,8 @@ defmodule KantoxCashier.Campaign.BulkPurchaseCoffeeTest do
       create_shoping_cart() |> add_coffee_to_cart(3)
 
     discount_amount = 3 * 3.75
+    name = BulkPurchaseCoffee.name()
 
-    assert %Cart{discounts: [^discount_amount]} = BulkPurchaseCoffee.apply(cart)
+    assert %Cart{discounts: [{^name, ^discount_amount}]} = BulkPurchaseCoffee.apply(cart)
   end
 end
