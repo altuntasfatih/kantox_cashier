@@ -42,5 +42,5 @@ defmodule KantoxCashier.ShoppingCart.Cart do
   def add_discount(%__MODULE__{} = cart, nil), do: cart
 
   def add_discount(%__MODULE__{discounts: discounts} = cart, discount),
-    do: %{cart | discounts: [discount | discounts]}
+    do: %{cart | discounts: [discount | discounts] |> Enum.sort()}
 end
