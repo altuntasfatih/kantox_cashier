@@ -41,20 +41,20 @@ defmodule KantoxCashierTest do
     test "should add items to cart", %{user_id: user_id} do
       assert %Cart{
                user_id: user_id,
-               products: %{CF1: {1, %Product{code: :CF1, price: 11.23}}},
+               products: %{CF1: {1, Product.coffee()}},
+               amount: Product.coffee().price,
                discounts: [],
-               amount: 11.23,
                total_discounts: 0.0,
-               final_amount: 11.23
+               final_amount: Product.coffee().price
              } == KantoxCashier.add_item(user_id, :CF1)
 
       assert %Cart{
                user_id: user_id,
-               products: %{
-                 CF1: {1, %Product{code: :CF1, price: 11.23}},
-                 SR1: {1, %Product{code: :SR1, price: 5.0}}
-               },
                discounts: [],
+               products: %{
+                 CF1: {1, Product.coffee()},
+                 SR1: {1, Product.strawberry()}
+               },
                amount: 16.23,
                total_discounts: 0.0,
                final_amount: 16.23
@@ -62,12 +62,12 @@ defmodule KantoxCashierTest do
 
       assert %Cart{
                user_id: user_id,
-               products: %{
-                 CF1: {1, %Product{code: :CF1, price: 11.23}},
-                 GR1: {1, %Product{code: :GR1, price: 3.11}},
-                 SR1: {1, %Product{code: :SR1, price: 5.0}}
-               },
                discounts: [],
+               products: %{
+                 CF1: {1, Product.coffee()},
+                 GR1: {1, Product.green_tea()},
+                 SR1: {1, Product.strawberry()}
+               },
                amount: 19.34,
                total_discounts: 0.0,
                final_amount: 19.34
@@ -98,11 +98,11 @@ defmodule KantoxCashierTest do
 
       # when & then
       assert %Cart{
-               products: %{CF1: {2, %Product{code: :CF1, price: 11.23}}}
+               products: %{CF1: {2, %Product{code: :CF1}}}
              } = KantoxCashier.remove_item(user_id, :SR1)
 
       assert %Cart{
-               products: %{CF1: {1, %Product{code: :CF1, price: 11.23}}}
+               products: %{CF1: {1, %Product{code: :CF1}}}
              } = KantoxCashier.remove_item(user_id, :CF1)
 
       assert %Cart{

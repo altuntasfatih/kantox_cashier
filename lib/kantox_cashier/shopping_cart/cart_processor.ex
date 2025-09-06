@@ -42,6 +42,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
 
   def checkout(cart) do
     cart
+    |> reset_calculations()
     |> apply_campaigns()
     |> calculate()
   end
@@ -77,10 +78,12 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   end
 
   defp apply_campaigns(cart) do
-    cart = %Cart{cart | discounts: [], final_amount: 0.0, amount: 0.0, total_discounts: 0.0}
-
     load_campaigns()
     |> Enum.reduce(cart, fn campaign, cart -> campaign.apply(cart) end)
+  end
+
+  defp reset_calculations(cart) do
+    %Cart{cart | discounts: [], final_amount: 0.0, amount: 0.0, total_discounts: 0.0}
   end
 
   defp load_campaigns do

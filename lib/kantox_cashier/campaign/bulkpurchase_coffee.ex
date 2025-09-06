@@ -7,7 +7,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseCoffee do
 
   @impl Behaviour
   def apply(%Cart{} = cart) do
-    case Map.get(cart.products, Product.coffee()) do
+    case Map.get(cart.products, Product.coffee().code) do
       nil -> cart
       {count, _} -> Cart.add_discount(cart, calculate_discount(count))
     end
@@ -16,7 +16,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseCoffee do
   @impl Behaviour
   def enabled?, do: config()[:enabled]
 
-  def name, do: config()[:name]
+  defp name, do: config()[:name]
 
   defp calculate_discount(count) do
     if count >= count_of_coffee() do

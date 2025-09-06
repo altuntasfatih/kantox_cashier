@@ -1,15 +1,14 @@
 defmodule KantoxCashier.Product do
   defstruct [:code, :price]
 
-  def new(:CF1), do: %__MODULE__{code: coffee(), price: price(coffee())}
-  def new(:GR1), do: %__MODULE__{code: green_tea(), price: price(green_tea())}
-  def new(:SR1), do: %__MODULE__{code: strawbery(), price: price(strawbery())}
+  def new(:CF1), do: coffee()
+  def new(:GR1), do: green_tea()
+  def new(:SR1), do: strawberry()
   def new(_), do: {:error, :invalid_product_code}
 
-  # todo it might return product struct, not atom lets see
-  def coffee, do: :CF1
-  def green_tea, do: :GR1
-  def strawbery, do: :SR1
+  def coffee, do: %__MODULE__{code: :CF1, price: price(:CF1)}
+  def green_tea, do: %__MODULE__{code: :GR1, price: price(:GR1)}
+  def strawberry, do: %__MODULE__{code: :SR1, price: price(:SR1)}
 
   def price(:CF1), do: Application.get_env(:kantox_cashier, :products)[:CF1]
   def price(:GR1), do: Application.get_env(:kantox_cashier, :products)[:GR1]

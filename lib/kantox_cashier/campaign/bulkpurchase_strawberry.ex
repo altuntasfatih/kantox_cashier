@@ -7,7 +7,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberry do
 
   @impl Behaviour
   def apply(%Cart{} = cart) do
-    case Map.get(cart.products, Product.strawbery()) do
+    case Map.get(cart.products, Product.strawberry().code) do
       nil -> cart
       {count, _} -> Cart.add_discount(cart, calculate_discount(count))
     end
@@ -17,7 +17,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberry do
   def enabled?,
     do: config()[:enabled]
 
-  def name, do: config()[:name]
+  defp name, do: config()[:name]
 
   defp calculate_discount(count) do
     if count >= count_of_strawberry() do

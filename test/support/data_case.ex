@@ -26,13 +26,13 @@ defmodule KantoxCashier.DataCase do
     end)
   end
 
-  def create_shoping_cart(user_id \\ 1), do: Cart.new(user_id)
+  def create_shopping_cart(user_id \\ 1), do: Cart.new(user_id)
 
   def add_greentea_to_cart(cart, count \\ 1) do
     Enum.reduce(1..count, cart, fn _, cart ->
       Cart.add_product(
         cart,
-        Product.new(Product.green_tea())
+        Product.green_tea()
       )
     end)
   end
@@ -41,7 +41,7 @@ defmodule KantoxCashier.DataCase do
     Enum.reduce(1..count, cart, fn _, cart ->
       Cart.add_product(
         cart,
-        Product.new(Product.strawbery())
+        Product.strawberry()
       )
     end)
   end
@@ -50,7 +50,7 @@ defmodule KantoxCashier.DataCase do
     Enum.reduce(1..count, cart, fn _, cart ->
       Cart.add_product(
         cart,
-        Product.new(Product.coffee())
+        Product.coffee()
       )
     end)
   end
