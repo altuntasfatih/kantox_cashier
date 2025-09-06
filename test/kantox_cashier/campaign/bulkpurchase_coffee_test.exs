@@ -56,7 +56,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseCoffeeTest do
       assert %Cart{discounts: [{^expected_name, ^expected_discount}]} = result
     end
 
-    test "should only apply discount to coffee, ignoring other products", %{cart: cart} do
+    test "should only apply discount to coffee, ignoring other basket", %{cart: cart} do
       # given - threshold is 3
       cart =
         cart

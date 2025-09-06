@@ -8,9 +8,9 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     test "should create shopping cart" do
       assert CartProcessor.create_shopping_cart(@user_id) == %Cart{
                user_id: @user_id,
-               products: %{},
+               basket: %{},
+               basket_amount: 0.0,
                discounts: [],
-               amount: 0.0,
                total_discounts: 0.0,
                final_amount: 0.0
              }
@@ -27,13 +27,13 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       cart = CartProcessor.add_item(cart, Product.coffee())
 
       assert %Cart{
-               products: %{CF1: {1, %Product{code: :CF1, price: 11.23}}}
+               basket: %{CF1: {1, %Product{code: :CF1, price: 11.23}}}
              } = cart
 
       cart = CartProcessor.add_item(cart, Product.strawberry())
 
       assert %Cart{
-               products: %{
+               basket: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
@@ -43,7 +43,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       cart = CartProcessor.add_item(cart, Product.green_tea())
 
       assert %Cart{
-               products: %{
+               basket: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
@@ -52,7 +52,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
              } = cart
 
       assert %Cart{
-               products: %{
+               basket: %{
                  CF1: {2, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
@@ -75,7 +75,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     test "should remove item", %{cart: cart} do
       # when & then
       assert %Cart{
-               products: %{
+               basket: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}}
                },
                discounts: []
@@ -85,9 +85,9 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     test "should remove all items", %{cart: cart} do
       # when & then
       assert %Cart{
-               products: %{},
+               basket: %{},
+               basket_amount: 0.0,
                discounts: [],
-               amount: 0.0,
                total_discounts: 0.0,
                final_amount: 0.0,
                user_id: @user_id
@@ -99,7 +99,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     test "should ignore not existing items", %{cart: cart} do
       # when & then
       assert %Cart{
-               products: %{
+               basket: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}}
                },
@@ -116,11 +116,11 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
     test "should calcute empty cart", %{cart: cart} do
       assert %Cart{
-               products: %{},
+               basket: %{},
+               basket_amount: 0.0,
                discounts: [],
-               amount: 0.00,
-               total_discounts: 0.00,
-               final_amount: 0.00,
+               total_discounts: 0.0,
+               final_amount: 0.0,
                user_id: @user_id
              } == CartProcessor.checkout(cart)
     end
@@ -132,12 +132,12 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
         |> CartProcessor.add_item(Product.green_tea())
 
       assert %Cart{
-               products: %{
+               basket: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}}
                },
                discounts: [],
-               amount: 14.34,
+               basket_amount: 14.34,
                total_discounts: 0.0,
                final_amount: 14.34,
                user_id: @user_id
@@ -151,9 +151,9 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       assert %Cart{
                user_id: @user_id,
-               products: %{GR1: {2, %Product{code: :GR1, price: 3.11}}},
+               basket: %{GR1: {2, %Product{code: :GR1, price: 3.11}}},
                discounts: [{"Buy One Get One Free Green Tea", 3.11}],
-               amount: 6.22,
+               basket_amount: 6.22,
                total_discounts: 3.11,
                final_amount: 3.11
              } == CartProcessor.checkout(cart)
@@ -168,15 +168,15 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     test "should preview empty cart", %{cart: cart} do
       assert %{
                user_id: @user_id,
-               product_summary: [],
-               shopping_cart_amount: 0.0,
+               basket_summary: [],
+               basket_amount: 0.0,
                discount_summary: [],
                total_discounts: 0.0,
                final_amount: 0.0
              } == CartProcessor.preview(cart)
     end
 
-    test "should preview cart with products and no discounts", %{cart: cart} do
+    test "should preview cart with basket and no discounts", %{cart: cart} do
       # given
       cart =
         CartProcessor.add_item(cart, Product.coffee())
@@ -185,7 +185,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       # when & then
       assert %{
                user_id: @user_id,
-               product_summary: [
+               basket_summary: [
                  %{
                    name: "Coffee",
                    count: 1,
@@ -199,14 +199,14 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                    total: 3.11
                  }
                ],
-               shopping_cart_amount: 14.34,
+               basket_amount: 14.34,
                discount_summary: [],
                total_discounts: 0.0,
                final_amount: 14.34
              } == CartProcessor.preview(cart)
     end
 
-    test "should preview cart with products and discounts", %{cart: cart} do
+    test "should preview cart with basket and discounts", %{cart: cart} do
       # given
       cart =
         CartProcessor.add_item(cart, Product.strawberry())
@@ -216,7 +216,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       # when & then
       assert %{
                user_id: @user_id,
-               product_summary: [
+               basket_summary: [
                  %{
                    name: "Strawberry",
                    count: 3,
@@ -224,7 +224,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                    total: 15.0
                  }
                ],
-               shopping_cart_amount: 15.0,
+               basket_amount: 15.0,
                discount_summary: [
                  %{
                    discount_name: "Bulk Purchase Strawberry",

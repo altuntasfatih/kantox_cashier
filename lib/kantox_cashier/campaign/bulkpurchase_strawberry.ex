@@ -7,7 +7,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberry do
 
   @impl Behaviour
   def apply(%Cart{} = cart) do
-    case Map.get(cart.products, Product.strawberry().code) do
+    case Map.get(cart.basket, Product.strawberry().code) do
       nil -> cart
       {count, _} -> Cart.add_discount(cart, calculate_discount(count))
     end

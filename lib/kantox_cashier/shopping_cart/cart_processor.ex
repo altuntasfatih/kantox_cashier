@@ -17,8 +17,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   def preview(cart) do
     cart = checkout(cart)
 
-    product_summary =
-      Enum.map(cart.products, fn {code, {count, %Product{price: price}}} ->
+    basket_summary =
+      Enum.map(cart.basket, fn {code, {count, %Product{price: price}}} ->
         %{
           name: Product.code_to_string(code),
           count: count,
@@ -29,12 +29,12 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
 
     %{
       user_id: cart.user_id,
-      product_summary: product_summary,
+      basket_summary: basket_summary,
       discount_summary:
         Enum.map(cart.discounts, fn {name, amount} ->
           %{discount_name: name, discount_amount: amount}
         end),
-      shopping_cart_amount: cart.amount,
+      basket_amount: cart.basket_amount,
       total_discounts: cart.total_discounts,
       final_amount: cart.final_amount
     }
@@ -47,31 +47,31 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     |> calculate()
   end
 
-  defp calculate(%Cart{products: products} = cart) when products == %{}, do: cart
+  defp calculate(%Cart{basket: basket} = cart) when basket == %{}, do: cart
 
-  defp calculate(%Cart{products: products, discounts: []} = cart) do
-    products_total_amount =
-      products
+  defp calculate(%Cart{basket: basket, discounts: []} = cart) do
+    basket_amount =
+      basket
       |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
       |> Enum.sum()
       |> Float.round(2)
 
-    %Cart{cart | amount: products_total_amount, final_amount: products_total_amount}
+    %Cart{cart | basket_amount: basket_amount, final_amount: basket_amount}
   end
 
-  defp calculate(%Cart{products: products, discounts: discounts} = cart) do
-    products_total_amount =
-      products
+  defp calculate(%Cart{basket: basket, discounts: discounts} = cart) do
+    basket_amount =
+      basket
       |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
       |> Enum.sum()
       |> Float.round(2)
 
     total_discounts = Enum.sum_by(discounts, fn {_, discount} -> discount end) |> Float.round(2)
-    final_amount = Float.round(products_total_amount - total_discounts, 2)
+    final_amount = Float.round(basket_amount - total_discounts, 2)
 
     %Cart{
       cart
-      | amount: products_total_amount,
+      | basket_amount: basket_amount,
         total_discounts: total_discounts,
         final_amount: final_amount
     }
@@ -83,7 +83,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   end
 
   defp reset_calculations(cart) do
-    %Cart{cart | discounts: [], final_amount: 0.0, amount: 0.0, total_discounts: 0.0}
+    %Cart{cart | discounts: [], final_amount: 0.0, basket_amount: 0.0, total_discounts: 0.0}
   end
 
   defp load_campaigns do

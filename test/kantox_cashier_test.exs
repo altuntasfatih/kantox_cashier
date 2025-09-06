@@ -7,18 +7,18 @@ defmodule KantoxCashierTest do
     test "start successful" do
       assert %Cart{
                user_id: 1,
-               products: %{},
+               basket: %{},
                discounts: [],
-               amount: 0.0,
+               basket_amount: 0.0,
                total_discounts: 0.0,
                final_amount: 0.0
              } == KantoxCashier.start(1)
 
       assert %Cart{
                user_id: 12,
-               products: %{},
+               basket: %{},
                discounts: [],
-               amount: 0.0,
+               basket_amount: 0.0,
                total_discounts: 0.0,
                final_amount: 0.0
              } == KantoxCashier.start(12)
@@ -26,8 +26,8 @@ defmodule KantoxCashierTest do
 
     test "should return same cart if exist" do
       user_id = 22
-      assert %Cart{user_id: ^user_id, discounts: [], products: %{}} = KantoxCashier.start(user_id)
-      assert %Cart{user_id: ^user_id, discounts: [], products: %{}} = KantoxCashier.start(user_id)
+      assert %Cart{user_id: ^user_id, discounts: [], basket: %{}} = KantoxCashier.start(user_id)
+      assert %Cart{user_id: ^user_id, discounts: [], basket: %{}} = KantoxCashier.start(user_id)
     end
   end
 
@@ -41,8 +41,8 @@ defmodule KantoxCashierTest do
     test "should add items to cart", %{user_id: user_id} do
       assert %Cart{
                user_id: user_id,
-               products: %{CF1: {1, Product.coffee()}},
-               amount: Product.coffee().price,
+               basket: %{CF1: {1, Product.coffee()}},
+               basket_amount: Product.coffee().price,
                discounts: [],
                total_discounts: 0.0,
                final_amount: Product.coffee().price
@@ -51,11 +51,11 @@ defmodule KantoxCashierTest do
       assert %Cart{
                user_id: user_id,
                discounts: [],
-               products: %{
+               basket: %{
                  CF1: {1, Product.coffee()},
                  SR1: {1, Product.strawberry()}
                },
-               amount: 16.23,
+               basket_amount: 16.23,
                total_discounts: 0.0,
                final_amount: 16.23
              } == KantoxCashier.add_item(user_id, :SR1)
@@ -63,12 +63,12 @@ defmodule KantoxCashierTest do
       assert %Cart{
                user_id: user_id,
                discounts: [],
-               products: %{
+               basket: %{
                  CF1: {1, Product.coffee()},
                  GR1: {1, Product.green_tea()},
                  SR1: {1, Product.strawberry()}
                },
-               amount: 19.34,
+               basket_amount: 19.34,
                total_discounts: 0.0,
                final_amount: 19.34
              } == KantoxCashier.add_item(user_id, :GR1)
@@ -98,18 +98,18 @@ defmodule KantoxCashierTest do
 
       # when & then
       assert %Cart{
-               products: %{CF1: {2, %Product{code: :CF1}}}
+               basket: %{CF1: {2, %Product{code: :CF1}}}
              } = KantoxCashier.remove_item(user_id, :SR1)
 
       assert %Cart{
-               products: %{CF1: {1, %Product{code: :CF1}}}
+               basket: %{CF1: {1, %Product{code: :CF1}}}
              } = KantoxCashier.remove_item(user_id, :CF1)
 
       assert %Cart{
                user_id: user_id,
+               basket: %{},
+               basket_amount: 0.0,
                discounts: [],
-               products: %{},
-               amount: 0.0,
                total_discounts: 0.0,
                final_amount: 0.0
              } ==
@@ -120,8 +120,8 @@ defmodule KantoxCashierTest do
       assert %Cart{
                user_id: user_id,
                discounts: [],
-               products: %{},
-               amount: 0.0,
+               basket: %{},
+               basket_amount: 0.0,
                total_discounts: 0.0,
                final_amount: 0.0
              } ==
@@ -134,7 +134,7 @@ defmodule KantoxCashierTest do
       user_id = 12
       assert %{} = KantoxCashier.start(user_id)
 
-      assert %Cart{user_id: ^user_id, products: %{}, discounts: []} =
+      assert %Cart{user_id: ^user_id, basket: %{}, discounts: []} =
                KantoxCashier.get_cart(user_id)
     end
 
@@ -159,7 +159,7 @@ defmodule KantoxCashierTest do
       # when & then
       assert %{
                user_id: ^user_id,
-               product_summary: [
+               basket_summary: [
                  %{name: "Coffee", count: 2, price: 11.23, total: 22.46},
                  %{name: "Strawberry", count: 3, price: 5.0, total: 15.0},
                  %{name: "Green Tea", count: 2, price: 3.11, total: 6.22}
@@ -168,7 +168,7 @@ defmodule KantoxCashierTest do
                  %{discount_amount: 3.11, discount_name: "Buy One Get One Free Green Tea"},
                  %{discount_amount: 1.5, discount_name: "Bulk Purchase Strawberry"}
                ],
-               shopping_cart_amount: 43.68,
+               basket_amount: 43.68,
                total_discounts: 4.61,
                final_amount: 39.07
              } = KantoxCashier.preview(user_id)
