@@ -8,11 +8,12 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
   describe "cashier module test" do
     test "create_shopping_cart/1" do
       assert CartProcessor.create_shopping_cart(1) == %Cart{
-               discounts: [],
                user_id: 1,
                products: %{},
+               discounts: [],
                amount: 0.0,
-               total: 0.0
+               total_discounts: 0.0,
+               final_amount: 0.0
              }
     end
 
@@ -101,7 +102,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                },
                user_id: user_id,
                amount: 25.56,
-               total: 22.45,
+               total_discounts: 3.11,
+               final_amount: 22.45,
                discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}]
              }
     end
@@ -117,13 +119,14 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       # when & then
       assert cart == %Cart{
+               user_id: user_id,
                products: %{
                  GR1: {2, %Product{code: :GR1, price: 3.11}}
                },
-               user_id: user_id,
+               discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}],
                amount: 6.22,
-               total: 3.11,
-               discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}]
+               total_discounts: 3.11,
+               final_amount: 3.11
              }
     end
 
@@ -140,14 +143,15 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       # when & then
       assert cart == %Cart{
+               user_id: user_id,
                products: %{
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: user_id,
+               discounts: [{BulkPurchaseStrawberry.name(), 1.5}],
                amount: 18.11,
-               total: 16.61,
-               discounts: [{BulkPurchaseStrawberry.name(), 1.5}]
+               total_discounts: 1.5,
+               final_amount: 16.61
              }
     end
 
@@ -165,15 +169,16 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       # when & then
       assert cart == %Cart{
+               user_id: user_id,
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: user_id,
+               discounts: [{BulkPurchaseCoffee.name(), 11.25}],
                amount: 41.8,
-               total: 30.55,
-               discounts: [{BulkPurchaseCoffee.name(), 11.25}]
+               total_discounts: 11.25,
+               final_amount: 30.55
              }
     end
 
@@ -193,14 +198,15 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       # when & then
       assert cart == %Cart{
+               user_id: user_id,
                products: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {2, %Product{code: :GR1, price: 3.11}}
                },
-               user_id: user_id,
+               discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}],
                amount: 17.45,
-               total: 14.34,
-               discounts: [{BuyOneGetOneFreeGreentea.name(), 3.11}]
+               total_discounts: 3.11,
+               final_amount: 14.34
              }
     end
 
@@ -219,18 +225,19 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       # when & then
       assert cart == %Cart{
+               user_id: user_id,
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {2, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: user_id,
-               amount: 44.91,
-               total: 30.55,
                discounts: [
                  {BulkPurchaseCoffee.name(), 11.25},
                  {BuyOneGetOneFreeGreentea.name(), 3.11}
-               ]
+               ],
+               amount: 44.91,
+               total_discounts: 14.36,
+               final_amount: 30.55
              }
     end
 
@@ -251,19 +258,20 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       # when & then
       assert cart == %Cart{
+               user_id: user_id,
                products: %{
                  CF1: {3, %Product{code: :CF1, price: 11.23}},
                  GR1: {2, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: user_id,
-               amount: 54.91,
-               total: 39.05,
                discounts: [
                  {BulkPurchaseCoffee.name(), 11.25},
                  {BuyOneGetOneFreeGreentea.name(), 3.11},
                  {BulkPurchaseStrawberry.name(), 1.5}
-               ]
+               ],
+               amount: 54.91,
+               total_discounts: 15.86,
+               final_amount: 39.05
              }
     end
 
@@ -286,15 +294,16 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
       # when & then
       assert cart == %Cart{
+               user_id: user_id,
+               discounts: [{BulkPurchaseStrawberry.name(), 1.5}],
                products: %{
                  CF1: {2, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {3, %Product{code: :SR1, price: 5.0}}
                },
-               user_id: user_id,
                amount: 40.57,
-               total: 39.07,
-               discounts: [{BulkPurchaseStrawberry.name(), 1.5}]
+               total_discounts: 1.5,
+               final_amount: 39.07
              }
     end
   end

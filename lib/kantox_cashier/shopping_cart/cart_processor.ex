@@ -27,18 +27,16 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
         }
       end)
 
-    discount_summary = %{
-      total_discounts: Enum.sum(cart.discounts),
-      discounts: cart.discounts
-    }
-
     %{
       user_id: cart.user_id,
       products: product_summary,
       shopping_cart_amount: cart.amount,
-      discounts: discount_summary.discounts,
-      total_discounts: discount_summary.total_discounts,
-      final_amount: cart.total
+      discount_summary:
+        Enum.map(cart.discounts, fn {name, amount} ->
+          %{discount_name: name, discount_amount: amount}
+        end),
+      total_discounts: cart.total_discounts,
+      final_amount: cart.final_amount
     }
   end
 
@@ -51,26 +49,35 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   defp calculate(%Cart{products: products} = cart) when products == %{}, do: cart
 
   defp calculate(%Cart{products: products, discounts: []} = cart) do
-    total =
+    products_total_amount =
       products
       |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
       |> Enum.sum()
+      |> Float.round(2)
 
-    %Cart{cart | amount: Float.round(total, 2), total: Float.round(total, 2)}
+    %Cart{cart | amount: products_total_amount, final_amount: products_total_amount}
   end
 
   defp calculate(%Cart{products: products, discounts: discounts} = cart) do
-    amount =
+    products_total_amount =
       products
       |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
       |> Enum.sum()
+      |> Float.round(2)
 
-    total = amount - Enum.sum_by(discounts, fn {_name, amount} -> amount end)
-    %Cart{cart | amount: Float.round(amount, 2), total: Float.round(total, 2)}
+    total_discounts = Enum.sum_by(discounts, fn {_, discount} -> discount end) |> Float.round(2)
+    final_amount = Float.round(products_total_amount - total_discounts, 2)
+
+    %Cart{
+      cart
+      | amount: products_total_amount,
+        total_discounts: total_discounts,
+        final_amount: final_amount
+    }
   end
 
   defp apply_campaigns(cart) do
-    cart = %Cart{cart | discounts: [], total: 0.0, amount: 0.0}
+    cart = %Cart{cart | discounts: [], final_amount: 0.0, amount: 0.0, total_discounts: 0.0}
 
     load_campaigns()
     |> Enum.reduce(cart, fn campaign, cart -> campaign.apply(cart) end)

@@ -1,23 +1,25 @@
 defmodule KantoxCashier.ShoppingCart.Cart do
-  defstruct [:user_id, :products, :amount, :discounts, :total]
+  defstruct [:user_id, :products, :discounts, :amount, :total_discounts, :final_amount]
 
   alias KantoxCashier.Product
 
   @type t :: %__MODULE__{
           user_id: integer(),
           products: list(),
-          amount: float(),
           discounts: list(),
-          total: float()
+          amount: float(),
+          total_discounts: float(),
+          final_amount: float()
         }
 
   def new(user_id) when is_integer(user_id) do
     %__MODULE__{
       user_id: user_id,
       products: %{},
-      amount: 0.00,
       discounts: [],
-      total: 0.00
+      amount: 0.00,
+      total_discounts: 0.00,
+      final_amount: 0.00
     }
   end
 
