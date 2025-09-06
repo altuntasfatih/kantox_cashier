@@ -1,9 +1,9 @@
 defmodule KantoxCashier.Campaign.BulkPurchaseCoffee do
   @behaviour KantoxCashier.Campaign.Behaviour
 
-  alias KantoxCashier.ShoppingCart.Cart
   alias KantoxCashier.Campaign.Behaviour
   alias KantoxCashier.Product
+  alias KantoxCashier.ShoppingCart.Cart
 
   @impl Behaviour
   def apply(%Cart{} = cart) do
@@ -22,15 +22,15 @@ defmodule KantoxCashier.Campaign.BulkPurchaseCoffee do
   end
 
   @impl Behaviour
-  def enabled?(), do: config()[:enabled]
+  def enabled?, do: config()[:enabled]
 
-  defp count_of_coffee(),
+  defp count_of_coffee,
     do: config()[:count_of_coffee]
 
-  defp discount_amount(),
+  defp discount_amount,
     do: config()[:discount_amount]
 
-  defp config(),
+  defp config,
     do:
       Application.get_env(:kantox_cashier, :campaigns)
       |> Enum.find(fn {k, _v} -> k == __MODULE__ end)

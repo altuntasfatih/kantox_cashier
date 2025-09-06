@@ -5,9 +5,9 @@ defmodule KantoxCashier.Product do
   def new(:GR1), do: %__MODULE__{code: green_tea(), price: price(green_tea())}
   def new(:SR1), do: %__MODULE__{code: strawbery(), price: price(strawbery())}
 
-  def coffee(), do: :CF1
-  def green_tea(), do: :GR1
-  def strawbery(), do: :SR1
+  def coffee, do: :CF1
+  def green_tea, do: :GR1
+  def strawbery, do: :SR1
 
   def price(:CF1), do: Application.get_env(:kantox_cashier, :products)[:CF1]
   def price(:GR1), do: Application.get_env(:kantox_cashier, :products)[:GR1]

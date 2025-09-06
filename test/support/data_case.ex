@@ -1,13 +1,13 @@
 defmodule KantoxCashier.DataCase do
   use ExUnit.CaseTemplate
 
-  alias KantoxCashier.ShoppingCart.Cart
   alias KantoxCashier.Product
+  alias KantoxCashier.ShoppingCart.Cart
 
   using do
     quote do
-      alias KantoxCashier.ShoppingCart.Cart
       alias KantoxCashier.Product
+      alias KantoxCashier.ShoppingCart.Cart
       import KantoxCashier.DataCase
     end
   end
