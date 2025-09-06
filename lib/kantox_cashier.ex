@@ -25,9 +25,9 @@ defmodule KantoxCashier do
     end
   end
 
-  def checkout(user_id) when is_integer(user_id) do
+  def preview(user_id) when is_integer(user_id) do
     with {:ok, pid} <- lookup_cart(user_id) do
-      GenServer.call(pid, {:checkout})
+      GenServer.call(pid, {:preview})
     end
   end
 

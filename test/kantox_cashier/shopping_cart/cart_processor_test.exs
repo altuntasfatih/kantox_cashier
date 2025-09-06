@@ -76,6 +76,37 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                discounts: []
              } = CartProcessor.remove_item(cart, :CF1)
     end
+
+    test "preview/1" do
+      # given
+      user_id = 1
+
+      cart =
+        create_cart(user_id)
+        |> add_greentea()
+        |> add_coffee()
+        |> add_strawberry()
+        |> add_coffee()
+        |> add_coffee()
+        |> add_greentea()
+
+      # when & then
+      assert %{
+               final_amount: 30.55,
+               products: [
+                 %{count: 3, total: 33.69, product: "Coffee", price: 11.23},
+                 %{count: 1, total: 5.0, product: "Strawberry", price: 5.0},
+                 %{count: 2, total: 6.22, product: "Green Tea", price: 3.11}
+               ],
+               total_discounts: 14.36,
+               user_id: 1,
+               discount_summary: [
+                 %{discount_amount: 11.25, discount_name: "Bulk Purchase Coffee"},
+                 %{discount_amount: 3.11, discount_name: "Buy One Get One Free Green Tea"}
+               ],
+               shopping_cart_amount: 44.91
+             } == CartProcessor.preview(cart)
+    end
   end
 
   describe "test inputs" do

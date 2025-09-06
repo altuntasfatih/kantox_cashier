@@ -14,7 +14,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     |> checkout()
   end
 
-  def summarize_cart(cart) do
+  def preview(cart) do
     cart = checkout(cart)
 
     product_summary =

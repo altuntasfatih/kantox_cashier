@@ -142,4 +142,40 @@ defmodule KantoxCashierTest do
       assert {:error, :cart_not_found} == KantoxCashier.get_cart(22)
     end
   end
+
+  describe "preview/1" do
+    test "should return the cart preview for a user" do
+      # given
+      user_id = 33
+      KantoxCashier.start(33)
+      assert %{} = KantoxCashier.add_item(user_id, :CF1)
+      assert %{} = KantoxCashier.add_item(user_id, :CF1)
+      assert %{} = KantoxCashier.add_item(user_id, :SR1)
+      assert %{} = KantoxCashier.add_item(user_id, :SR1)
+      assert %{} = KantoxCashier.add_item(user_id, :SR1)
+      assert %{} = KantoxCashier.add_item(user_id, :GR1)
+      assert %{} = KantoxCashier.add_item(user_id, :GR1)
+
+      # when & then
+      assert %{
+               user_id: ^user_id,
+               products: [
+                 %{product: "Coffee", count: 2, price: 11.23, total: 22.46},
+                 %{product: "Strawberry", count: 3, price: 5.0, total: 15.0},
+                 %{product: "Green Tea", count: 2, price: 3.11, total: 6.22}
+               ],
+               discount_summary: [
+                 %{discount_amount: 3.11, discount_name: "Buy One Get One Free Green Tea"},
+                 %{discount_amount: 1.5, discount_name: "Bulk Purchase Strawberry"}
+               ],
+               shopping_cart_amount: 43.68,
+               total_discounts: 4.61,
+               final_amount: 39.07
+             } = KantoxCashier.preview(user_id)
+    end
+
+    test "should return cart not found error" do
+      assert {:error, :cart_not_found} == KantoxCashier.preview(22)
+    end
+  end
 end

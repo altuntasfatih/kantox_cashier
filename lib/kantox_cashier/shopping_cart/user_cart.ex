@@ -24,8 +24,8 @@ defmodule KantoxCashier.ShoppingCart.UserCart do
     {:reply, state, state}
   end
 
-  def handle_call({:checkout}, _from, cart) do
-    {:reply, CartProcessor.checkout(cart), cart}
+  def handle_call({:preview}, _from, cart) do
+    {:reply, CartProcessor.preview(cart), cart}
   end
 
   defp via_tuple(user_id) do
