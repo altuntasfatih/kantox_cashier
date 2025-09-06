@@ -8,8 +8,18 @@ defmodule KantoxCashier.DataCase do
     quote do
       alias KantoxCashier.Product
       alias KantoxCashier.ShoppingCart.Cart
+
       import KantoxCashier.DataCase
     end
+  end
+
+  setup do
+    on_exit(fn ->
+      DynamicSupervisor.which_children(KantoxCashier.ShoppingCart.CartSupervisor)
+      |> Enum.each(fn {_, pid, _, _} ->
+        DynamicSupervisor.terminate_child(KantoxCashier.ShoppingCart.CartSupervisor, pid)
+      end)
+    end)
   end
 
   def create_shoping_cart(user_id \\ 1), do: Cart.new(user_id)

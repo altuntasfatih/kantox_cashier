@@ -25,20 +25,29 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     |> checkout()
   end
 
+  @spec checkout(KantoxCashier.ShoppingCart.Cart.t()) :: KantoxCashier.ShoppingCart.Cart.t()
+  def checkout(%Cart{products: products} = cart) when products == %{}, do: cart
+
+  def checkout(%Cart{products: products, discounts: []} = cart) do
+    total =
+      products
+      |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
+      |> Enum.sum()
+
+    %Cart{cart | amount: Float.round(total, 2), total: Float.round(total, 2)}
+  end
+
   def checkout(%Cart{products: products, discounts: discounts} = cart) do
     amount =
       products
       |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
       |> Enum.sum()
 
-    total_discount = Enum.sum(discounts)
-    total = amount - total_discount
-
+    total = amount - Enum.sum(discounts)
     %Cart{cart | amount: Float.round(amount, 2), total: Float.round(total, 2)}
   end
 
   def apply_campaigns(cart) do
-    # clear previous discounts
     cart = %Cart{cart | discounts: [], total: 0.0, amount: 0.0}
 
     load_campaigns()

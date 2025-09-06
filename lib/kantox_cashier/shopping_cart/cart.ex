@@ -30,6 +30,13 @@ defmodule KantoxCashier.ShoppingCart.Cart do
 
   def remove_product(%__MODULE__{products: products} = cart, product_code)
       when is_atom(product_code) do
+    case Map.has_key?(products, product_code) do
+      true -> do_remove_product(cart, product_code)
+      false -> cart
+    end
+  end
+
+  defp do_remove_product(%__MODULE__{products: products} = cart, product_code) do
     {count, product} = Map.fetch!(products, product_code)
 
     if count > 1 do

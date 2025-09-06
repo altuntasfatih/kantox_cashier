@@ -1,4 +1,4 @@
-defmodule KantoxCashier.Cashier do
+defmodule KantoxCashier do
   alias KantoxCashier.Product
   alias KantoxCashier.ShoppingCart.CartRegistry
 
