@@ -20,7 +20,8 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreentea do
 
   defp calculate_discount(count, green_tea) do
     if count >= count_of_green_tea() do
-      {name(), Float.floor(count / 2) * green_tea.price}
+      free_items = div(count, 2)
+      {name(), free_items * green_tea.price}
     end
   end
 

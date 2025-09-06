@@ -6,6 +6,10 @@ defmodule KantoxCashier.DataCase do
 
   using do
     quote do
+      alias KantoxCashier.Campaign.BulkPurchaseCoffee
+      alias KantoxCashier.Campaign.BulkPurchaseStrawberry
+      alias KantoxCashier.Campaign.BuyOneGetOneFreeGreentea
+
       alias KantoxCashier.Product
       alias KantoxCashier.ShoppingCart.Cart
 

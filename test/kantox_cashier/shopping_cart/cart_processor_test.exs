@@ -1,8 +1,6 @@
 defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
-  alias KantoxCashier.Campaign.BulkPurchaseStrawberry
-  alias KantoxCashier.Campaign.BuyOneGetOneFreeGreentea
-  alias KantoxCashier.Campaign.BulkPurchaseCoffee
   use KantoxCashier.DataCase
+
   alias KantoxCashier.ShoppingCart.CartProcessor
 
   describe "cashier module test" do

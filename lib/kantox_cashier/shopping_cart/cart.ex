@@ -5,7 +5,7 @@ defmodule KantoxCashier.ShoppingCart.Cart do
 
   @type t :: %__MODULE__{
           user_id: integer(),
-          products: list(),
+          products: map(),
           discounts: list(),
           amount: float(),
           total_discounts: float(),
