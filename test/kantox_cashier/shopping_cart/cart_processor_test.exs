@@ -77,7 +77,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
   end
 
   describe "test inputs" do
-    test "GR1,SR1,GR1,GR1,CF1" do
+    test "add GR1,SR1,GR1,GR1,CF1" do
       cart =
         CartProcessor.create_shopping_cart(1)
         |> CartProcessor.add_item(:GR1)
@@ -99,7 +99,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
              }
     end
 
-    test "GR1,GR1" do
+    test "add GR1,GR1" do
       cart =
         CartProcessor.create_shopping_cart(1)
         |> CartProcessor.add_item(:GR1)
@@ -116,7 +116,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
              }
     end
 
-    test "SR1,SR1,GR1,SR1" do
+    test "add SR1,SR1,GR1,SR1" do
       cart =
         CartProcessor.create_shopping_cart(1)
         |> CartProcessor.add_item(:SR1)
@@ -136,7 +136,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
              }
     end
 
-    test "GR1,CF1,SR1,CF1,CF1" do
+    test "add GR1,CF1,SR1,CF1,CF1" do
       cart =
         CartProcessor.create_shopping_cart(1)
         |> CartProcessor.add_item(:GR1)
@@ -157,10 +157,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                discounts: [11.25]
              }
     end
-  end
 
-  describe "different flows" do
-    test "add GR1,SR1,GR1,GR1,CF1 and then SR1, GR1" do
+    test "add GR1,SR1,GR1,GR1,CF1 and then remove SR1, GR1" do
       cart =
         CartProcessor.create_shopping_cart(1)
         |> CartProcessor.add_item(:GR1)
@@ -228,6 +226,33 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                amount: 54.91,
                total: 39.05,
                discounts: [1.50, 3.11, 11.25]
+             }
+    end
+
+    test "GR1,CF1,SR1,CF1,CF1,GR1,SR1,SR1 and remove GR1,CF1" do
+      cart =
+        CartProcessor.create_shopping_cart(1)
+        |> CartProcessor.add_item(:GR1)
+        |> CartProcessor.add_item(:CF1)
+        |> CartProcessor.add_item(:SR1)
+        |> CartProcessor.add_item(:CF1)
+        |> CartProcessor.add_item(:CF1)
+        |> CartProcessor.add_item(:GR1)
+        |> CartProcessor.add_item(:SR1)
+        |> CartProcessor.add_item(:SR1)
+        |> CartProcessor.remove_item(:GR1)
+        |> CartProcessor.remove_item(:CF1)
+
+      assert cart == %Cart{
+               products: %{
+                 CF1: {2, %Product{code: :CF1, price: 11.23}},
+                 GR1: {1, %Product{code: :GR1, price: 3.11}},
+                 SR1: {3, %Product{code: :SR1, price: 5.0}}
+               },
+               user_id: 1,
+               amount: 40.57,
+               total: 39.07,
+               discounts: [1.50]
              }
     end
   end
