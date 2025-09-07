@@ -99,15 +99,15 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {1, %Product{code: :CF1, price: 11.23}},
-                 GR1: {3, %Product{code: :GR1, price: 3.11}},
-                 SR1: {1, %Product{code: :SR1, price: 5.0}}
+                 CF1: {1, %Item{code: :CF1, price: 11.23}},
+                 GR1: {3, %Item{code: :GR1, price: 3.11}},
+                 SR1: {1, %Item{code: :SR1, price: 5.0}}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -126,13 +126,13 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %Cart{
                basket: %{
-                 GR1: {2, %Product{code: :GR1, price: 3.11}}
+                 GR1: {2, %Item{code: :GR1, price: 3.11}}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -151,14 +151,14 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %Cart{
                basket: %{
-                 GR1: {1, %Product{code: :GR1, price: 3.11}},
-                 SR1: {3, %Product{code: :SR1, price: 5.0}}
+                 GR1: {1, %Item{code: :GR1, price: 3.11}},
+                 SR1: {3, %Item{code: :SR1, price: 5.0}}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -177,16 +177,16 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %Cart{
                user_id: @user_id,
                basket: %{
-                 CF1: {3, %Product{code: :CF1, price: 11.23}},
-                 GR1: {1, %Product{code: :GR1, price: 3.11}},
-                 SR1: {1, %Product{code: :SR1, price: 5.0}}
+                 CF1: {3, %Item{code: :CF1, price: 11.23}},
+                 GR1: {1, %Item{code: :GR1, price: 3.11}},
+                 SR1: {1, %Item{code: :SR1, price: 5.0}}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -205,15 +205,15 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {3, %Product{code: :CF1, price: 11.23}},
-                 GR1: {2, %Product{code: :GR1, price: 3.11}},
-                 SR1: {1, %Product{code: :SR1, price: 5.0}}
+                 CF1: {3, %Item{code: :CF1, price: 11.23}},
+                 GR1: {2, %Item{code: :GR1, price: 3.11}},
+                 SR1: {1, %Item{code: :SR1, price: 5.0}}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -232,14 +232,14 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %Cart{
                basket: %{
-                 GR1: {2, %Product{code: :GR1, price: 3.11}},
-                 SR1: {3, %Product{code: :SR1, price: 5.0}}
+                 GR1: {2, %Item{code: :GR1, price: 3.11}},
+                 SR1: {3, %Item{code: :SR1, price: 5.0}}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -258,15 +258,15 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {3, %Product{code: :CF1, price: 11.23}},
-                 GR1: {2, %Product{code: :GR1, price: 3.11}},
-                 SR1: {3, %Product{code: :SR1, price: 5.0}}
+                 CF1: {3, %Item{code: :CF1, price: 11.23}},
+                 GR1: {2, %Item{code: :GR1, price: 3.11}},
+                 SR1: {3, %Item{code: :SR1, price: 5.0}}
                },
                campaigns: ^expected_campaigns,
                basket_amount: ^expected_basket_amount,
@@ -278,7 +278,7 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
     test "scenario preview", %{cart: cart} do
       # given
       scenario = @given_test_scenarios.scenario_preview
-      expected_product_summary = scenario.basket_summary
+      expected_item_summary = scenario.basket_summary
       expected_campaigns_summary = scenario.campaigns_summary
       expected_basket_amount = scenario.basket_amount
       expected_campaigns_amount = scenario.campaigns_amount
@@ -286,13 +286,13 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
 
       cart =
         Enum.reduce(scenario.items, cart, fn item, cart ->
-          CartProcessor.add_item(cart, Product.new(item))
+          CartProcessor.add_item(cart, Item.new(item))
         end)
 
       # when & then
       assert %{
                user_id: @user_id,
-               basket_summary: ^expected_product_summary,
+               basket_summary: ^expected_item_summary,
                basket_amount: ^expected_basket_amount,
                campaigns_summary: ^expected_campaigns_summary,
                campaigns_amount: ^expected_campaigns_amount,

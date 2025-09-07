@@ -1,7 +1,7 @@
 defmodule KantoxCashier.DataCase do
   use ExUnit.CaseTemplate
 
-  alias KantoxCashier.Product
+  alias KantoxCashier.Item
   alias KantoxCashier.ShoppingCart.Cart
 
   using do
@@ -10,7 +10,7 @@ defmodule KantoxCashier.DataCase do
       alias KantoxCashier.Campaign.BulkPurchaseStrawberry
       alias KantoxCashier.Campaign.BuyOneGetOneFreeGreentea
 
-      alias KantoxCashier.Product
+      alias KantoxCashier.Item
       alias KantoxCashier.ShoppingCart.Cart
 
       import KantoxCashier.DataCase
@@ -30,27 +30,27 @@ defmodule KantoxCashier.DataCase do
 
   def add_greentea_to_cart(cart, count \\ 1) do
     Enum.reduce(1..count, cart, fn _, cart ->
-      Cart.add_product(
+      Cart.add_item(
         cart,
-        Product.green_tea()
+        Item.green_tea()
       )
     end)
   end
 
   def add_strawberry_to_cart(cart, count \\ 1) do
     Enum.reduce(1..count, cart, fn _, cart ->
-      Cart.add_product(
+      Cart.add_item(
         cart,
-        Product.strawberry()
+        Item.strawberry()
       )
     end)
   end
 
   def add_coffee_to_cart(cart, count \\ 1) do
     Enum.reduce(1..count, cart, fn _, cart ->
-      Cart.add_product(
+      Cart.add_item(
         cart,
-        Product.coffee()
+        Item.coffee()
       )
     end)
   end

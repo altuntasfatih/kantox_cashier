@@ -2,12 +2,12 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberry do
   @behaviour KantoxCashier.Campaign.Behaviour
 
   alias KantoxCashier.Campaign.Behaviour
-  alias KantoxCashier.Product
+  alias KantoxCashier.Item
   alias KantoxCashier.ShoppingCart.Cart
 
   @impl Behaviour
   def apply(%Cart{} = cart) do
-    case Map.get(cart.basket, Product.strawberry().code) do
+    case Map.get(cart.basket, Item.strawberry().code) do
       nil -> cart
       {strawberry_count, _} -> Cart.add_campaign(cart, calculate_campaign(strawberry_count))
     end

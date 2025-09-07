@@ -1,16 +1,16 @@
 defmodule KantoxCashier.ShoppingCart.CartProcessor do
-  alias KantoxCashier.Product
+  alias KantoxCashier.Item
   alias KantoxCashier.ShoppingCart.Cart
 
   def create_shopping_cart(user_id) when is_integer(user_id), do: Cart.new(user_id)
 
-  def add_item(cart, %Product{} = product) do
-    Cart.add_product(cart, product)
+  def add_item(cart, %Item{} = item) do
+    Cart.add_item(cart, item)
     |> checkout()
   end
 
-  def remove_item(cart, product_code) do
-    Cart.remove_product(cart, product_code)
+  def remove_item(cart, item_code) do
+    Cart.remove_item(cart, item_code)
     |> checkout()
   end
 
@@ -18,9 +18,9 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     cart = checkout(cart)
 
     basket_summary =
-      Enum.map(cart.basket, fn {code, {count, %Product{price: price}}} ->
+      Enum.map(cart.basket, fn {code, {count, %Item{price: price}}} ->
         %{
-          name: Product.code_to_string(code),
+          name: Item.code_to_string(code),
           count: count,
           price: price,
           total: Float.round(count * price, 2)
@@ -52,7 +52,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   defp calculate(%Cart{basket: basket, campaigns: []} = cart) do
     basket_amount =
       basket
-      |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
+      |> Enum.map(fn {_code, {count, %Item{price: price}}} -> count * price end)
       |> Enum.sum()
       |> Float.round(2)
 
@@ -62,7 +62,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   defp calculate(%Cart{basket: basket, campaigns: campaigns} = cart) do
     basket_amount =
       basket
-      |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
+      |> Enum.map(fn {_code, {count, %Item{price: price}}} -> count * price end)
       |> Enum.sum()
       |> Float.round(2)
 

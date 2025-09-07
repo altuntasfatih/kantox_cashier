@@ -1,5 +1,5 @@
 defmodule KantoxCashier do
-  alias KantoxCashier.Product
+  alias KantoxCashier.Item
   alias KantoxCashier.ShoppingCart.CartRegistry
 
   def start(user_id) when is_integer(user_id) do
@@ -12,16 +12,16 @@ defmodule KantoxCashier do
     end
   end
 
-  def add_item(user_id, product_code) when is_integer(user_id) do
-    with %Product{} = product <- Product.new(product_code),
+  def add_item(user_id, item_code) when is_integer(user_id) do
+    with %Item{} = item <- Item.new(item_code),
          {:ok, pid} <- lookup_cart(user_id) do
-      GenServer.call(pid, {:add_item, product})
+      GenServer.call(pid, {:add_item, item})
     end
   end
 
-  def remove_item(user_id, product_code) when is_integer(user_id) do
+  def remove_item(user_id, item_code) when is_integer(user_id) do
     with {:ok, pid} <- lookup_cart(user_id) do
-      GenServer.call(pid, {:remove_item, product_code})
+      GenServer.call(pid, {:remove_item, item_code})
     end
   end
 

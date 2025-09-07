@@ -12,7 +12,7 @@ config :kantox_cashier, :campaigns, [
    enabled: true, green_tea_count_threshold: 2, name: "Buy One Get One Free Green Tea"}
 ]
 
-config :kantox_cashier, :products, [
+config :kantox_cashier, :items, [
   {:CF1, 11.23},
   {:SR1, 5.0},
   {:GR1, 3.11}

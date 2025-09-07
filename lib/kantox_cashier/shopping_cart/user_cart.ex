@@ -10,13 +10,13 @@ defmodule KantoxCashier.ShoppingCart.UserCart do
     {:ok, CartProcessor.create_shopping_cart(user_id)}
   end
 
-  def handle_call({:add_item, product}, _from, cart) do
-    updated_cart = CartProcessor.add_item(cart, product)
+  def handle_call({:add_item, item}, _from, cart) do
+    updated_cart = CartProcessor.add_item(cart, item)
     {:reply, updated_cart, updated_cart}
   end
 
-  def handle_call({:remove_item, product_code}, _from, cart) do
-    updated_cart = CartProcessor.remove_item(cart, product_code)
+  def handle_call({:remove_item, item_code}, _from, cart) do
+    updated_cart = CartProcessor.remove_item(cart, item_code)
     {:reply, updated_cart, updated_cart}
   end
 

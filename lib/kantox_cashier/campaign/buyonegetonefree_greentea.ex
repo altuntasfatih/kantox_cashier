@@ -2,12 +2,12 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreentea do
   @behaviour KantoxCashier.Campaign.Behaviour
 
   alias KantoxCashier.Campaign.Behaviour
-  alias KantoxCashier.Product
+  alias KantoxCashier.Item
   alias KantoxCashier.ShoppingCart.Cart
 
   @impl Behaviour
   def apply(%Cart{} = cart) do
-    case Map.get(cart.basket, Product.green_tea().code) do
+    case Map.get(cart.basket, Item.green_tea().code) do
       nil ->
         cart
 
