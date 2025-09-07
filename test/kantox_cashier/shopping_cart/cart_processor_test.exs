@@ -114,7 +114,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       {:ok, cart: CartProcessor.create_shopping_cart(@user_id), user_id: @user_id}
     end
 
-    test "should calcute empty cart", %{cart: cart} do
+    test "should calculate empty cart", %{cart: cart} do
       assert %Cart{
                basket: %{},
                basket_amount: 0.0,

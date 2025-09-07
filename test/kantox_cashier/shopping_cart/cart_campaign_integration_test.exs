@@ -66,6 +66,34 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       campaigns_amount: 15.86,
       final_amount: 39.05
     },
+    scenario_8: %{
+      items: [:GR1, :CF1, :SR1],
+      expected_campaigns: [],
+      basket_amount: 19.34,
+      campaigns_amount: 0.0,
+      final_amount: 19.34
+    },
+    scenario_9: %{
+      items: [:GR1],
+      expected_campaigns: [],
+      basket_amount: 3.11,
+      campaigns_amount: 0.0,
+      final_amount: 3.11
+    },
+    scenario_10: %{
+      items: [:CF1],
+      expected_campaigns: [],
+      basket_amount: 11.23,
+      campaigns_amount: 0.0,
+      final_amount: 11.23
+    },
+    scenario_11: %{
+      items: [:SR1],
+      expected_campaigns: [],
+      basket_amount: 5.0,
+      campaigns_amount: 0.0,
+      final_amount: 5.0
+    },
     scenario_preview: %{
       items: [:GR1, :CF1, :SR1, :CF1, :CF1, :GR1],
       campaigns_summary: [
@@ -270,6 +298,108 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
                },
                campaigns: ^expected_campaigns,
                basket_amount: ^expected_basket_amount,
+               campaigns_amount: ^expected_campaigns_amount,
+               final_amount: ^expected_final_amount
+             } = cart
+    end
+
+    test "scenario 8", %{cart: cart} do
+      # given
+      scenario = @given_test_scenarios.scenario_8
+      expected_campaigns = scenario.expected_campaigns
+      expected_basket_amount = scenario.basket_amount
+      expected_campaigns_amount = scenario.campaigns_amount
+      expected_final_amount = scenario.final_amount
+
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Item.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
+               basket: %{
+                 CF1: {1, %Item{code: :CF1, price: 11.23}},
+                 GR1: {1, %Item{code: :GR1, price: 3.11}},
+                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+               },
+               basket_amount: ^expected_basket_amount,
+               campaigns: ^expected_campaigns,
+               campaigns_amount: ^expected_campaigns_amount,
+               final_amount: ^expected_final_amount
+             } = cart
+    end
+
+    test "scenario 9", %{cart: cart} do
+      # given
+      scenario = @given_test_scenarios.scenario_9
+      expected_campaigns = scenario.expected_campaigns
+      expected_basket_amount = scenario.basket_amount
+      expected_campaigns_amount = scenario.campaigns_amount
+      expected_final_amount = scenario.final_amount
+
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Item.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
+               basket: %{
+                 GR1: {1, %Item{code: :GR1, price: 3.11}}
+               },
+               basket_amount: ^expected_basket_amount,
+               campaigns: ^expected_campaigns,
+               campaigns_amount: ^expected_campaigns_amount,
+               final_amount: ^expected_final_amount
+             } = cart
+    end
+
+    test "scenario 10", %{cart: cart} do
+      # given
+      scenario = @given_test_scenarios.scenario_10
+      expected_campaigns = scenario.expected_campaigns
+      expected_basket_amount = scenario.basket_amount
+      expected_campaigns_amount = scenario.campaigns_amount
+      expected_final_amount = scenario.final_amount
+
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Item.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
+               basket: %{
+                 CF1: {1, %Item{code: :CF1, price: 11.23}}
+               },
+               basket_amount: ^expected_basket_amount,
+               campaigns: ^expected_campaigns,
+               campaigns_amount: ^expected_campaigns_amount,
+               final_amount: ^expected_final_amount
+             } = cart
+    end
+
+    test "scenario 11", %{cart: cart} do
+      # given
+      scenario = @given_test_scenarios.scenario_11
+      expected_campaigns = scenario.expected_campaigns
+      expected_basket_amount = scenario.basket_amount
+      expected_campaigns_amount = scenario.campaigns_amount
+      expected_final_amount = scenario.final_amount
+
+      cart =
+        Enum.reduce(scenario.items, cart, fn item, cart ->
+          CartProcessor.add_item(cart, Item.new(item))
+        end)
+
+      # when & then
+      assert %Cart{
+               basket: %{
+                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+               },
+               basket_amount: ^expected_basket_amount,
+               campaigns: ^expected_campaigns,
                campaigns_amount: ^expected_campaigns_amount,
                final_amount: ^expected_final_amount
              } = cart

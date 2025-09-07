@@ -3,7 +3,7 @@ defmodule KantoxCashier do
   Main API for the Kantox Cashier shopping cart system.
 
   This module provides a high-level interface for managing shopping carts,
-  including adding/removing items and previewing cart contents with campaign discounts.
+  including adding/removing items and previewing cart contents.
 
   ## Examples
 
@@ -22,7 +22,7 @@ defmodule KantoxCashier do
   alias KantoxCashier.ShoppingCart.CartRegistry
   alias KantoxCashier.ShoppingCart.Cart
 
-  @spec add_item(integer(), atom()) :: Cart.t()
+  @spec add_item(integer(), atom()) :: Cart.t() | {:error, :invalid_item_code}
   def add_item(user_id, item_code) when is_integer(user_id) do
     with %Item{} = item <- Item.new(item_code),
          {:ok, pid} <- get_cart_pid_or_create(user_id) do
@@ -30,7 +30,8 @@ defmodule KantoxCashier do
     end
   end
 
-  @spec remove_item(integer(), atom()) :: Cart.t() | {:error, :invalid_item_code | :cart_not_found}
+  @spec remove_item(integer(), atom()) ::
+          Cart.t() | {:error, :invalid_item_code | :cart_not_found}
   def remove_item(user_id, item_code) when is_integer(user_id) do
     with {:ok, pid} <- lookup_cart(user_id) do
       GenServer.call(pid, {:remove_item, item_code})
