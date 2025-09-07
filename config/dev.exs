@@ -13,7 +13,7 @@ config :kantox_cashier, :campaigns, [
 ]
 
 config :kantox_cashier, :items, [
-  {:CF1, 11.23},
-  {:SR1, 5.0},
-  {:GR1, 3.11}
+  {:CF1, price: 11.23, name: "Coffee"},
+  {:SR1, price: 5.0, name: "Strawberry"},
+  {:GR1, price: 3.11, name: "Green Tea"}
 ]

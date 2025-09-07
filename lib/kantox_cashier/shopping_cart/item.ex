@@ -10,11 +10,13 @@ defmodule KantoxCashier.Item do
   def green_tea, do: %__MODULE__{code: :GR1, price: price(:GR1)}
   def strawberry, do: %__MODULE__{code: :SR1, price: price(:SR1)}
 
-  def price(:CF1), do: Application.get_env(:kantox_cashier, :items)[:CF1]
-  def price(:GR1), do: Application.get_env(:kantox_cashier, :items)[:GR1]
-  def price(:SR1), do: Application.get_env(:kantox_cashier, :items)[:SR1]
+  def price(:CF1), do: config(:CF1)[:price]
+  def price(:GR1), do: config(:GR1)[:price]
+  def price(:SR1), do: config(:SR1)[:price]
 
-  def code_to_string(:CF1), do: "Coffee"
-  def code_to_string(:GR1), do: "Green Tea"
-  def code_to_string(:SR1), do: "Strawberry"
+  def code_to_string(:CF1), do: config(:CF1)[:name]
+  def code_to_string(:GR1), do: config(:GR1)[:name]
+  def code_to_string(:SR1), do: config(:SR1)[:name]
+
+  defp config(code), do: Application.get_env(:kantox_cashier, :items)[code]
 end
