@@ -3,7 +3,7 @@ defmodule KantoxCashier.ShoppingCart.CartRegistry do
 
   def create_shopping_cart(user_id) do
     DynamicSupervisor.start_child(
-      KantoxCashier.ShoppingCart.CartSupervisor,
+      KantoxCashier.ShoppingCart.CartDynamicSupervisor,
       {UserCart, user_id}
     )
   end
@@ -18,9 +18,7 @@ defmodule KantoxCashier.ShoppingCart.CartRegistry do
 
   def child_spec(opts) do
     %{
-      id: __MODULE__,
-      start: {__MODULE__, :start_link, [opts]},
-      restart: :transient
+      start: {__MODULE__, :start_link, [opts]}
     }
   end
 end

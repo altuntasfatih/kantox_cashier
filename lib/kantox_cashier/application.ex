@@ -1,10 +1,11 @@
 defmodule KantoxCashier.Application do
   use Application
 
+  @spec start(any(), any()) :: {:error, any()} | {:ok, pid()}
   def start(_type, _args) do
     children = [
       {Registry, keys: :unique, name: KantoxCashier.ShoppingCart.CartRegistry},
-      {DynamicSupervisor, name: KantoxCashier.ShoppingCart.CartSupervisor, strategy: :one_for_one}
+      {DynamicSupervisor, name: KantoxCashier.ShoppingCart.CartDynamicSupervisor}
     ]
 
     opts = [strategy: :one_for_one, name: KantoxCashier.Supervisor]

@@ -1,4 +1,30 @@
 defmodule KantoxCashier.ShoppingCart.UserCart do
+  @moduledoc """
+  GenServer managing individual user shopping cart state.
+
+  ## Production Considerations
+
+  # todo, think about adding persistence layer
+  # option 1: use Ecto
+  # pros: a very solid choice, save us
+  # cons: External dependency,
+
+  # option 2: use ETS
+  # pros: easy peasy, for temproray processes crash would save us
+  # cons: during deployment we lose the data because ets tables are tied to specific node,
+  # cons: does not support cross node replication
+
+  # option 3: use Distributed ETS(Mnesia)
+  # pros: distributed,
+  # cons: it is complex for simple shopping cart
+
+  # option 4: State Transfer  during deployment
+  # pros: i belive, it is too complex, what if we changed code and code
+
+
+
+  """
+
   use GenServer
   alias KantoxCashier.ShoppingCart.CartProcessor
 
@@ -20,8 +46,8 @@ defmodule KantoxCashier.ShoppingCart.UserCart do
     {:reply, updated_cart, updated_cart}
   end
 
-  def handle_call({:get_cart}, _, state) do
-    {:reply, state, state}
+  def handle_call({:get_cart}, _, cart) do
+    {:reply, cart, cart}
   end
 
   def handle_call({:preview}, _from, cart) do

@@ -19,9 +19,9 @@ defmodule KantoxCashier.DataCase do
 
   setup do
     on_exit(fn ->
-      DynamicSupervisor.which_children(KantoxCashier.ShoppingCart.CartSupervisor)
+      DynamicSupervisor.which_children(KantoxCashier.ShoppingCart.CartDynamicSupervisor)
       |> Enum.each(fn {_, pid, _, _} ->
-        DynamicSupervisor.terminate_child(KantoxCashier.ShoppingCart.CartSupervisor, pid)
+        DynamicSupervisor.terminate_child(KantoxCashier.ShoppingCart.CartDynamicSupervisor, pid)
       end)
     end)
   end
