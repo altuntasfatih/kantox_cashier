@@ -19,8 +19,8 @@ defmodule KantoxCashier do
   """
 
   alias KantoxCashier.Item
-  alias KantoxCashier.ShoppingCart.CartRegistry
   alias KantoxCashier.ShoppingCart.Cart
+  alias KantoxCashier.ShoppingCart.CartRegistry
 
   @spec add_item(integer(), atom()) :: Cart.t() | {:error, :invalid_item_code}
   def add_item(user_id, item_code) when is_integer(user_id) do

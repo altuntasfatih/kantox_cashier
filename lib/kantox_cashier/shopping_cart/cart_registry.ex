@@ -1,7 +1,7 @@
 defmodule KantoxCashier.ShoppingCart.CartRegistry do
   alias KantoxCashier.ShoppingCart.UserCart
 
-  def start_link() do
+  def start_link do
     Registry.start_link(keys: :unique, name: __MODULE__)
   end
 
