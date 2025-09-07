@@ -27,16 +27,11 @@ defmodule KantoxCashier do
     end
   end
 
-  defp lookup_cart(user_id) when is_integer(user_id) do
-    with {:ok, pid} <- CartRegistry.where_is(user_id) do
-      {:ok, pid}
-    end
-  end
+  defp lookup_cart(user_id) when is_integer(user_id), do: CartRegistry.where_is(user_id)
 
   defp get_cart_pid_or_create(user_id) when is_integer(user_id) do
-    with {:error, :cart_not_found} <- lookup_cart(user_id),
-         {:ok, pid} <- CartRegistry.create_shopping_cart(user_id) do
-      {:ok, pid}
+    with {:error, :cart_not_found} <- lookup_cart(user_id) do
+      CartRegistry.create_shopping_cart(user_id)
     end
   end
 end
