@@ -9,26 +9,22 @@ defmodule KantoxCashier.Campaign.BulkPurchaseCoffee do
   def apply(%Cart{} = cart) do
     case Map.get(cart.basket, Product.coffee().code) do
       nil -> cart
-      {count, _} -> Cart.add_campaign(cart, calculate_discount(count))
+      {coffee_count, _} -> Cart.add_campaign(cart, calculate_campaign(coffee_count))
     end
   end
 
   @impl Behaviour
   def enabled?, do: config()[:enabled]
 
-  defp name, do: config()[:name]
+  defp calculate_campaign(coffee_count) do
+    config = config()
+    coffee_count_threshold = config[:coffee_count_threshold]
+    campaigns_amount = config[:campaigns_amount]
 
-  defp calculate_discount(count) do
-    if count >= count_of_coffee() do
-      {name(), campaigns_amount() * count}
+    if coffee_count >= coffee_count_threshold do
+      {config[:name], campaigns_amount * coffee_count}
     end
   end
-
-  defp count_of_coffee,
-    do: config()[:count_of_coffee]
-
-  defp campaigns_amount,
-    do: config()[:campaigns_amount]
 
   defp config,
     do:

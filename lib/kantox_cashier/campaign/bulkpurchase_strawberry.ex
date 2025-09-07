@@ -9,7 +9,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberry do
   def apply(%Cart{} = cart) do
     case Map.get(cart.basket, Product.strawberry().code) do
       nil -> cart
-      {count, _} -> Cart.add_campaign(cart, calculate_discount(count))
+      {strawberry_count, _} -> Cart.add_campaign(cart, calculate_campaign(strawberry_count))
     end
   end
 
@@ -17,19 +17,15 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberry do
   def enabled?,
     do: config()[:enabled]
 
-  defp name, do: config()[:name]
+  defp calculate_campaign(strawberry_count) do
+    config = config()
+    strawberry_count_threshold = config[:strawberry_count_threshold]
+    campaigns_amount = config[:campaigns_amount]
 
-  defp calculate_discount(count) do
-    if count >= count_of_strawberry() do
-      {name(), campaigns_amount() * count}
+    if strawberry_count >= strawberry_count_threshold do
+      {config[:name], campaigns_amount * strawberry_count}
     end
   end
-
-  defp count_of_strawberry,
-    do: config()[:count_of_strawberry]
-
-  defp campaigns_amount,
-    do: config()[:campaigns_amount]
 
   defp config,
     do:

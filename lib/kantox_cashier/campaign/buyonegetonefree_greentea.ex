@@ -8,25 +8,26 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreentea do
   @impl Behaviour
   def apply(%Cart{} = cart) do
     case Map.get(cart.basket, Product.green_tea().code) do
-      nil -> cart
-      {count, green_tea} -> Cart.add_campaign(cart, calculate_discount(count, green_tea))
+      nil ->
+        cart
+
+      {green_tea_count, green_tea} ->
+        Cart.add_campaign(cart, calculate_campaign(green_tea_count, green_tea.price))
     end
   end
 
   @impl Behaviour
   def enabled?, do: config()[:enabled]
 
-  defp name, do: config()[:name]
+  defp calculate_campaign(count, green_tea_price) do
+    config = config()
+    green_tea_count_threshold = config[:green_tea_count_threshold]
 
-  defp calculate_discount(count, green_tea) do
-    if count >= count_of_green_tea() do
+    if count >= green_tea_count_threshold do
       free_items = div(count, 2)
-      {name(), free_items * green_tea.price}
+      {config[:name], green_tea_price * free_items}
     end
   end
-
-  defp count_of_green_tea,
-    do: config()[:count_of_green_tea]
 
   defp config,
     do:
