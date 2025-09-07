@@ -1,5 +1,5 @@
 defmodule KantoxCashier.ShoppingCart.Cart do
-  defstruct [:user_id, :basket, :basket_amount, :discounts, :total_discounts, :final_amount]
+  defstruct [:user_id, :basket, :basket_amount, :campaigns, :campaigns_amount, :final_amount]
 
   alias KantoxCashier.Product
 
@@ -7,8 +7,8 @@ defmodule KantoxCashier.ShoppingCart.Cart do
           user_id: integer(),
           basket: map(),
           basket_amount: float(),
-          discounts: list(),
-          total_discounts: float(),
+          campaigns: list(),
+          campaigns_amount: float(),
           final_amount: float()
         }
 
@@ -16,10 +16,10 @@ defmodule KantoxCashier.ShoppingCart.Cart do
     %__MODULE__{
       user_id: user_id,
       basket: %{},
-      basket_amount: 0.00,
-      discounts: [],
-      total_discounts: 0.00,
-      final_amount: 0.00
+      basket_amount: 0.0,
+      campaigns: [],
+      campaigns_amount: 0.0,
+      final_amount: 0.0
     }
   end
 
@@ -43,13 +43,13 @@ defmodule KantoxCashier.ShoppingCart.Cart do
     end
   end
 
-  def add_discount(%__MODULE__{} = cart, nil), do: cart
+  def add_campaign(%__MODULE__{} = cart, nil), do: cart
 
-  def add_discount(%__MODULE__{discounts: discounts} = cart, discount) do
-    discounts =
-      [discount | discounts]
-      |> Enum.sort_by(fn {_, discount_amount} -> discount_amount end, :desc)
+  def add_campaign(%__MODULE__{campaigns: campaigns} = cart, campaign) do
+    campaigns =
+      [campaign | campaigns]
+      |> Enum.sort_by(fn {_, campaign_amount} -> campaign_amount end, :desc)
 
-    %{cart | discounts: discounts}
+    %{cart | campaigns: campaigns}
   end
 end

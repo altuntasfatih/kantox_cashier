@@ -4,19 +4,18 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
 
   describe "apply/1" do
     setup do
-      cart = create_shopping_cart()
-      {:ok, cart: cart}
+      {:ok, cart: create_shopping_cart()}
     end
 
-    test "should not apply discount when has no greentea", %{cart: cart} do
+    test "should not apply campaign when has no greentea", %{cart: cart} do
       # when
       result = BuyOneGetOneFreeGreentea.apply(cart)
 
       # then
-      assert %Cart{discounts: []} = result
+      assert %Cart{campaigns: []} = result
     end
 
-    test "should not apply discount when there is one greentea", %{cart: cart} do
+    test "should not apply campaign when there is one greentea", %{cart: cart} do
       # given
       cart = add_greentea_to_cart(cart, 1)
 
@@ -24,10 +23,10 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       result = BuyOneGetOneFreeGreentea.apply(cart)
 
       # then
-      assert %Cart{discounts: []} = result
+      assert %Cart{campaigns: []} = result
     end
 
-    test "should apply discount when there is two greentea", %{cart: cart} do
+    test "should apply campaign when there is two greentea", %{cart: cart} do
       # given - buy one get one free
       cart = add_greentea_to_cart(cart, 2)
 
@@ -38,10 +37,10 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       expected_discount = 1 * 3.11
       expected_name = "Buy One Get One Free Green Tea"
 
-      assert %Cart{discounts: [{^expected_name, ^expected_discount}]} = result
+      assert %Cart{campaigns: [{^expected_name, ^expected_discount}]} = result
     end
 
-    test "should apply discount when there is more than two greentea", %{cart: cart} do
+    test "should apply campaign when there is more than two greentea", %{cart: cart} do
       # given
       cart = add_greentea_to_cart(cart, 5)
 
@@ -52,10 +51,10 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       expected_discount = 2 * 3.11
       expected_name = "Buy One Get One Free Green Tea"
 
-      assert %Cart{discounts: [{^expected_name, ^expected_discount}]} = result
+      assert %Cart{campaigns: [{^expected_name, ^expected_discount}]} = result
     end
 
-    test "should only apply discount to greentea, ignoring other basket", %{cart: cart} do
+    test "should only apply campaign to greentea, ignoring other basket", %{cart: cart} do
       # given
       cart =
         cart
@@ -69,7 +68,7 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       expected_discount = 4 * 3.11
       expected_name = "Buy One Get One Free Green Tea"
 
-      assert %Cart{discounts: [{^expected_name, ^expected_discount}]} = result
+      assert %Cart{campaigns: [{^expected_name, ^expected_discount}]} = result
     end
   end
 end

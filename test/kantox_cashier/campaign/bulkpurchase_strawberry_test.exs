@@ -13,7 +13,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberryTest do
       result = BulkPurchaseStrawberry.apply(cart)
 
       # then
-      assert %Cart{discounts: []} = result
+      assert %Cart{campaigns: []} = result
     end
 
     test "should not apply discount when strawberry count is below threshold", %{cart: cart} do
@@ -24,7 +24,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberryTest do
       result = BulkPurchaseStrawberry.apply(cart)
 
       # then
-      assert %Cart{discounts: []} = result
+      assert %Cart{campaigns: []} = result
     end
 
     test "should apply discount when strawberry count equals threshold", %{cart: cart} do
@@ -38,7 +38,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberryTest do
       expected_discount = 3 * 0.50
       expected_name = "Bulk Purchase Strawberry"
 
-      assert %Cart{discounts: [{^expected_name, ^expected_discount}]} = result
+      assert %Cart{campaigns: [{^expected_name, ^expected_discount}]} = result
     end
 
     test "should apply discount when coffee count exceeds threshold", %{cart: cart} do
@@ -52,7 +52,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberryTest do
       expected_discount = 5 * 0.50
       expected_name = "Bulk Purchase Strawberry"
 
-      assert %Cart{discounts: [{^expected_name, ^expected_discount}]} = result
+      assert %Cart{campaigns: [{^expected_name, ^expected_discount}]} = result
     end
 
     test "should only apply discount to coffee, ignoring other basket", %{cart: cart} do
@@ -69,7 +69,7 @@ defmodule KantoxCashier.Campaign.BulkPurchaseStrawberryTest do
       expected_discount = 4 * 0.50
       expected_name = "Bulk Purchase Strawberry"
 
-      assert %Cart{discounts: [{^expected_name, ^expected_discount}]} = result
+      assert %Cart{campaigns: [{^expected_name, ^expected_discount}]} = result
     end
   end
 end

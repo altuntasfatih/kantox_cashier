@@ -10,8 +10,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: @user_id,
                basket: %{},
                basket_amount: 0.0,
-               discounts: [],
-               total_discounts: 0.0,
+               campaigns: [],
+               campaigns_amount: 0.0,
                final_amount: 0.0
              }
     end
@@ -37,7 +37,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               discounts: []
+               campaigns: []
              } = cart
 
       cart = CartProcessor.add_item(cart, Product.green_tea())
@@ -48,7 +48,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               discounts: []
+               campaigns: []
              } = cart
 
       assert %Cart{
@@ -57,7 +57,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  GR1: {1, %Product{code: :GR1, price: 3.11}},
                  SR1: {1, %Product{code: :SR1, price: 5.0}}
                },
-               discounts: []
+               campaigns: []
              } = CartProcessor.add_item(cart, Product.coffee())
     end
   end
@@ -78,7 +78,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                basket: %{
                  CF1: {1, %Product{code: :CF1, price: 11.23}}
                },
-               discounts: []
+               campaigns: []
              } = CartProcessor.remove_item(cart, :GR1)
     end
 
@@ -87,8 +87,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       assert %Cart{
                basket: %{},
                basket_amount: 0.0,
-               discounts: [],
-               total_discounts: 0.0,
+               campaigns: [],
+               campaigns_amount: 0.0,
                final_amount: 0.0,
                user_id: @user_id
              } ==
@@ -103,7 +103,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}}
                },
-               discounts: []
+               campaigns: []
              } =
                CartProcessor.remove_item(cart, :SR1)
     end
@@ -118,14 +118,14 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       assert %Cart{
                basket: %{},
                basket_amount: 0.0,
-               discounts: [],
-               total_discounts: 0.0,
+               campaigns: [],
+               campaigns_amount: 0.0,
                final_amount: 0.0,
                user_id: @user_id
              } == CartProcessor.checkout(cart)
     end
 
-    test "should calculate cart amount without discounts", %{cart: cart} do
+    test "should calculate cart amount without campaigns", %{cart: cart} do
       # given
       cart =
         CartProcessor.add_item(cart, Product.coffee())
@@ -136,15 +136,15 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  CF1: {1, %Product{code: :CF1, price: 11.23}},
                  GR1: {1, %Product{code: :GR1, price: 3.11}}
                },
-               discounts: [],
+               campaigns: [],
                basket_amount: 14.34,
-               total_discounts: 0.0,
+               campaigns_amount: 0.0,
                final_amount: 14.34,
                user_id: @user_id
              } == CartProcessor.checkout(cart)
     end
 
-    test "should calculate cart amount with discounts", %{cart: cart} do
+    test "should calculate cart amount with campaigns", %{cart: cart} do
       cart =
         CartProcessor.add_item(cart, Product.green_tea())
         |> CartProcessor.add_item(Product.green_tea())
@@ -152,9 +152,9 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       assert %Cart{
                user_id: @user_id,
                basket: %{GR1: {2, %Product{code: :GR1, price: 3.11}}},
-               discounts: [{"Buy One Get One Free Green Tea", 3.11}],
+               campaigns: [{"Buy One Get One Free Green Tea", 3.11}],
                basket_amount: 6.22,
-               total_discounts: 3.11,
+               campaigns_amount: 3.11,
                final_amount: 3.11
              } == CartProcessor.checkout(cart)
     end
@@ -170,13 +170,13 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                user_id: @user_id,
                basket_summary: [],
                basket_amount: 0.0,
-               discount_summary: [],
-               total_discounts: 0.0,
+               campaigns_summary: [],
+               campaigns_amount: 0.0,
                final_amount: 0.0
              } == CartProcessor.preview(cart)
     end
 
-    test "should preview cart with basket and no discounts", %{cart: cart} do
+    test "should preview cart with basket and no campaigns", %{cart: cart} do
       # given
       cart =
         CartProcessor.add_item(cart, Product.coffee())
@@ -200,13 +200,13 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  }
                ],
                basket_amount: 14.34,
-               discount_summary: [],
-               total_discounts: 0.0,
+               campaigns_summary: [],
+               campaigns_amount: 0.0,
                final_amount: 14.34
              } == CartProcessor.preview(cart)
     end
 
-    test "should preview cart with basket and discounts", %{cart: cart} do
+    test "should preview cart with basket and campaigns", %{cart: cart} do
       # given
       cart =
         CartProcessor.add_item(cart, Product.strawberry())
@@ -225,13 +225,13 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                  }
                ],
                basket_amount: 15.0,
-               discount_summary: [
+               campaigns_summary: [
                  %{
-                   discount_name: "Bulk Purchase Strawberry",
-                   discount_amount: 1.5
+                   campaign_name: "Bulk Purchase Strawberry",
+                   campaigns_amount: 1.5
                  }
                ],
-               total_discounts: 1.5,
+               campaigns_amount: 1.5,
                final_amount: 13.5
              } == CartProcessor.preview(cart)
     end

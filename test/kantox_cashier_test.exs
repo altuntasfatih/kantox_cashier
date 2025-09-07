@@ -8,26 +8,26 @@ defmodule KantoxCashierTest do
       assert %Cart{
                user_id: 1,
                basket: %{},
-               discounts: [],
                basket_amount: 0.0,
-               total_discounts: 0.0,
+               campaigns: [],
+               campaigns_amount: 0.0,
                final_amount: 0.0
              } == KantoxCashier.start(1)
 
       assert %Cart{
                user_id: 12,
                basket: %{},
-               discounts: [],
                basket_amount: 0.0,
-               total_discounts: 0.0,
+               campaigns: [],
+               campaigns_amount: 0.0,
                final_amount: 0.0
              } == KantoxCashier.start(12)
     end
 
     test "should return same cart if exist" do
       user_id = 22
-      assert %Cart{user_id: ^user_id, discounts: [], basket: %{}} = KantoxCashier.start(user_id)
-      assert %Cart{user_id: ^user_id, discounts: [], basket: %{}} = KantoxCashier.start(user_id)
+      assert %Cart{user_id: ^user_id, campaigns: [], basket: %{}} = KantoxCashier.start(user_id)
+      assert %Cart{user_id: ^user_id, campaigns: [], basket: %{}} = KantoxCashier.start(user_id)
     end
   end
 
@@ -43,33 +43,33 @@ defmodule KantoxCashierTest do
                user_id: user_id,
                basket: %{CF1: {1, Product.coffee()}},
                basket_amount: Product.coffee().price,
-               discounts: [],
-               total_discounts: 0.0,
+               campaigns: [],
+               campaigns_amount: 0.0,
                final_amount: Product.coffee().price
              } == KantoxCashier.add_item(user_id, :CF1)
 
       assert %Cart{
                user_id: user_id,
-               discounts: [],
+               campaigns: [],
                basket: %{
                  CF1: {1, Product.coffee()},
                  SR1: {1, Product.strawberry()}
                },
                basket_amount: 16.23,
-               total_discounts: 0.0,
+               campaigns_amount: 0.0,
                final_amount: 16.23
              } == KantoxCashier.add_item(user_id, :SR1)
 
       assert %Cart{
                user_id: user_id,
-               discounts: [],
+               campaigns: [],
                basket: %{
                  CF1: {1, Product.coffee()},
                  GR1: {1, Product.green_tea()},
                  SR1: {1, Product.strawberry()}
                },
                basket_amount: 19.34,
-               total_discounts: 0.0,
+               campaigns_amount: 0.0,
                final_amount: 19.34
              } == KantoxCashier.add_item(user_id, :GR1)
     end
@@ -109,8 +109,8 @@ defmodule KantoxCashierTest do
                user_id: user_id,
                basket: %{},
                basket_amount: 0.0,
-               discounts: [],
-               total_discounts: 0.0,
+               campaigns: [],
+               campaigns_amount: 0.0,
                final_amount: 0.0
              } ==
                KantoxCashier.remove_item(user_id, :CF1)
@@ -119,10 +119,10 @@ defmodule KantoxCashierTest do
     test "should ignore not existing items", %{user_id: user_id} do
       assert %Cart{
                user_id: user_id,
-               discounts: [],
+               campaigns: [],
                basket: %{},
                basket_amount: 0.0,
-               total_discounts: 0.0,
+               campaigns_amount: 0.0,
                final_amount: 0.0
              } ==
                KantoxCashier.remove_item(user_id, :CF1)
@@ -134,7 +134,7 @@ defmodule KantoxCashierTest do
       user_id = 12
       assert %{} = KantoxCashier.start(user_id)
 
-      assert %Cart{user_id: ^user_id, basket: %{}, discounts: []} =
+      assert %Cart{user_id: ^user_id, basket: %{}, campaigns: []} =
                KantoxCashier.get_cart(user_id)
     end
 
@@ -164,12 +164,12 @@ defmodule KantoxCashierTest do
                  %{name: "Strawberry", count: 3, price: 5.0, total: 15.0},
                  %{name: "Green Tea", count: 2, price: 3.11, total: 6.22}
                ],
-               discount_summary: [
-                 %{discount_amount: 3.11, discount_name: "Buy One Get One Free Green Tea"},
-                 %{discount_amount: 1.5, discount_name: "Bulk Purchase Strawberry"}
+               campaigns_summary: [
+                 %{campaigns_amount: 3.11, campaign_name: "Buy One Get One Free Green Tea"},
+                 %{campaigns_amount: 1.5, campaign_name: "Bulk Purchase Strawberry"}
                ],
                basket_amount: 43.68,
-               total_discounts: 4.61,
+               campaigns_amount: 4.61,
                final_amount: 39.07
              } = KantoxCashier.preview(user_id)
     end

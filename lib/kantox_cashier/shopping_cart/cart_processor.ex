@@ -30,12 +30,12 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     %{
       user_id: cart.user_id,
       basket_summary: basket_summary,
-      discount_summary:
-        Enum.map(cart.discounts, fn {name, amount} ->
-          %{discount_name: name, discount_amount: amount}
+      campaigns_summary:
+        Enum.map(cart.campaigns, fn {name, amount} ->
+          %{campaign_name: name, campaigns_amount: amount}
         end),
       basket_amount: cart.basket_amount,
-      total_discounts: cart.total_discounts,
+      campaigns_amount: cart.campaigns_amount,
       final_amount: cart.final_amount
     }
   end
@@ -49,7 +49,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
 
   defp calculate(%Cart{basket: basket} = cart) when basket == %{}, do: cart
 
-  defp calculate(%Cart{basket: basket, discounts: []} = cart) do
+  defp calculate(%Cart{basket: basket, campaigns: []} = cart) do
     basket_amount =
       basket
       |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
@@ -59,20 +59,22 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     %Cart{cart | basket_amount: basket_amount, final_amount: basket_amount}
   end
 
-  defp calculate(%Cart{basket: basket, discounts: discounts} = cart) do
+  defp calculate(%Cart{basket: basket, campaigns: campaigns} = cart) do
     basket_amount =
       basket
       |> Enum.map(fn {_code, {count, %Product{price: price}}} -> count * price end)
       |> Enum.sum()
       |> Float.round(2)
 
-    total_discounts = Enum.sum_by(discounts, fn {_, discount} -> discount end) |> Float.round(2)
-    final_amount = Float.round(basket_amount - total_discounts, 2)
+    campaigns_amount =
+      Enum.sum_by(campaigns, fn {_, campaign_amount} -> campaign_amount end) |> Float.round(2)
+
+    final_amount = Float.round(basket_amount - campaigns_amount, 2)
 
     %Cart{
       cart
       | basket_amount: basket_amount,
-        total_discounts: total_discounts,
+        campaigns_amount: campaigns_amount,
         final_amount: final_amount
     }
   end
@@ -83,7 +85,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   end
 
   defp reset_calculations(cart) do
-    %Cart{cart | discounts: [], final_amount: 0.0, basket_amount: 0.0, total_discounts: 0.0}
+    %Cart{cart | campaigns: [], final_amount: 0.0, basket_amount: 0.0, campaigns_amount: 0.0}
   end
 
   defp load_campaigns do

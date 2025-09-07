@@ -9,7 +9,7 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreentea do
   def apply(%Cart{} = cart) do
     case Map.get(cart.basket, Product.green_tea().code) do
       nil -> cart
-      {count, green_tea} -> Cart.add_discount(cart, calculate_discount(count, green_tea))
+      {count, green_tea} -> Cart.add_campaign(cart, calculate_discount(count, green_tea))
     end
   end
 
