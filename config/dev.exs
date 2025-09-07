@@ -8,7 +8,7 @@ config :kantox_cashier, :campaigns, [
    strawberry_count_threshold: 3,
    campaigns_amount: 0.50,
    name: "Bulk Purchase Strawberry"},
-  {KantoxCashier.Campaign.BuyOneGetOneFreeGreentea,
+  {KantoxCashier.Campaign.BuyOneGetOneFreeGreenTea,
    enabled: true, green_tea_count_threshold: 2, name: "Buy One Get One Free Green Tea"}
 ]
 

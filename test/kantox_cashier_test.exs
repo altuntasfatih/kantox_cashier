@@ -3,32 +3,34 @@ defmodule KantoxCashierTest do
 
   alias KantoxCashier
 
-  @user_id 99
-
   describe "get_cart/1" do
-    test "should create a cart if not exist and return it" do
+    setup do
+      {:ok, %{user_id: :rand.uniform(1000)}}
+    end
+
+    test "should create a cart if not exist and return it", %{user_id: user_id} do
       assert %Cart{
-               user_id: @user_id,
+               user_id: user_id,
                basket: %{},
                basket_amount: 0.0,
                campaigns: [],
                campaigns_amount: 0.0,
                final_amount: 0.0
-             } == KantoxCashier.get_cart(@user_id)
+             } == KantoxCashier.get_cart(user_id)
     end
 
-    test "should return same cart" do
-      assert %Cart{user_id: @user_id, campaigns: [], basket: %{}} =
-               KantoxCashier.get_cart(@user_id)
+    test "should return same cart", %{user_id: user_id} do
+      assert %Cart{user_id: ^user_id, campaigns: [], basket: %{}} =
+               KantoxCashier.get_cart(user_id)
 
-      assert %Cart{user_id: @user_id, campaigns: [], basket: %{}} =
-               KantoxCashier.get_cart(@user_id)
+      assert %Cart{user_id: ^user_id, campaigns: [], basket: %{}} =
+               KantoxCashier.get_cart(user_id)
     end
   end
 
   describe "add_item/2" do
     setup do
-      {:ok, %{user_id: @user_id}}
+      {:ok, %{user_id: :rand.uniform(1000)}}
     end
 
     test "should add items to cart", %{user_id: user_id} do
@@ -74,7 +76,7 @@ defmodule KantoxCashierTest do
 
   describe "remove_item/2" do
     setup do
-      %{user_id: @user_id}
+      {:ok, %{user_id: :rand.uniform(1000)}}
     end
 
     test "should remove items from cart", %{user_id: user_id} do
@@ -103,13 +105,11 @@ defmodule KantoxCashierTest do
                KantoxCashier.remove_item(user_id, :CF1)
     end
 
-    test "should return cart not found error", %{user_id: user_id} do
-      assert {:error, :cart_not_found} ==
-               KantoxCashier.remove_item(user_id, :CF1)
+    test "should return cart not found error", _ do
+      assert {:error, :cart_not_found} == KantoxCashier.remove_item(-1, :CF1)
     end
 
     test "should ignore not existing items", %{user_id: user_id} do
-      # given
       assert %{} = KantoxCashier.add_item(user_id, :CF1)
       assert %{} = KantoxCashier.add_item(user_id, :CF1)
 
@@ -122,19 +122,23 @@ defmodule KantoxCashierTest do
   end
 
   describe "preview/1" do
-    test "should return the cart preview for a user" do
+    setup do
+      {:ok, %{user_id: :rand.uniform(1000)}}
+    end
+
+    test "should return the cart preview for a user", %{user_id: user_id} do
       # given
-      assert %{} = KantoxCashier.add_item(@user_id, :CF1)
-      assert %{} = KantoxCashier.add_item(@user_id, :CF1)
-      assert %{} = KantoxCashier.add_item(@user_id, :SR1)
-      assert %{} = KantoxCashier.add_item(@user_id, :SR1)
-      assert %{} = KantoxCashier.add_item(@user_id, :SR1)
-      assert %{} = KantoxCashier.add_item(@user_id, :GR1)
-      assert %{} = KantoxCashier.add_item(@user_id, :GR1)
+      assert %{} = KantoxCashier.add_item(user_id, :CF1)
+      assert %{} = KantoxCashier.add_item(user_id, :CF1)
+      assert %{} = KantoxCashier.add_item(user_id, :SR1)
+      assert %{} = KantoxCashier.add_item(user_id, :SR1)
+      assert %{} = KantoxCashier.add_item(user_id, :SR1)
+      assert %{} = KantoxCashier.add_item(user_id, :GR1)
+      assert %{} = KantoxCashier.add_item(user_id, :GR1)
 
       # when & then
       assert %{
-               user_id: @user_id,
+               user_id: ^user_id,
                basket_summary: [
                  %{name: "Coffee", count: 2, price: 11.23, total: 22.46},
                  %{name: "Strawberry", count: 3, price: 5.0, total: 15.0},
@@ -147,11 +151,11 @@ defmodule KantoxCashierTest do
                basket_amount: 43.68,
                campaigns_amount: 4.61,
                final_amount: 39.07
-             } = KantoxCashier.preview(@user_id)
+             } = KantoxCashier.preview(user_id)
     end
 
-    test "should return cart not found error" do
-      assert {:error, :cart_not_found} == KantoxCashier.preview(22)
+    test "should return cart not found error", _ do
+      assert {:error, :cart_not_found} == KantoxCashier.preview(-1)
     end
   end
 end

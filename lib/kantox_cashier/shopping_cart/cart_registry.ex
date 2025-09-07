@@ -1,10 +1,18 @@
 defmodule KantoxCashier.ShoppingCart.CartRegistry do
   alias KantoxCashier.ShoppingCart.UserCart
 
+  def start_link() do
+    Registry.start_link(keys: :unique, name: __MODULE__)
+  end
+
   def create_shopping_cart(user_id) do
     DynamicSupervisor.start_child(
       KantoxCashier.ShoppingCart.CartDynamicSupervisor,
-      {UserCart, user_id}
+      %{
+        id: UserCart,
+        start: {UserCart, :start_link, [user_id]},
+        restart: :transient
+      }
     )
   end
 
@@ -16,9 +24,17 @@ defmodule KantoxCashier.ShoppingCart.CartRegistry do
     end
   end
 
-  def child_spec(opts) do
+  def via_tuple(term) do
+    {:via, Registry, {__MODULE__, term}}
+  end
+
+  def child_spec(_opts) do
     %{
-      start: {__MODULE__, :start_link, [opts]}
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, []},
+      type: :supervisor,
+      restart: :permanent,
+      shutdown: :infinity
     }
   end
 end

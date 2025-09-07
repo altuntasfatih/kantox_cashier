@@ -1,6 +1,6 @@
-defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
+defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenTeaTest do
   use KantoxCashier.DataCase
-  alias KantoxCashier.Campaign.BuyOneGetOneFreeGreentea
+  alias KantoxCashier.Campaign.BuyOneGetOneFreeGreenTea
 
   describe "apply/1" do
     setup do
@@ -9,7 +9,7 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
 
     test "should not apply campaign when has no greentea", %{cart: cart} do
       # when
-      result = BuyOneGetOneFreeGreentea.apply(cart)
+      result = BuyOneGetOneFreeGreenTea.apply(cart)
 
       # then
       assert %Cart{campaigns: []} = result
@@ -20,7 +20,7 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       cart = add_greentea_to_cart(cart, 1)
 
       # when
-      result = BuyOneGetOneFreeGreentea.apply(cart)
+      result = BuyOneGetOneFreeGreenTea.apply(cart)
 
       # then
       assert %Cart{campaigns: []} = result
@@ -31,7 +31,7 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       cart = add_greentea_to_cart(cart, 2)
 
       # when
-      result = BuyOneGetOneFreeGreentea.apply(cart)
+      result = BuyOneGetOneFreeGreenTea.apply(cart)
 
       # then, one greentea is free
       expected_discount = 1 * 3.11
@@ -45,7 +45,7 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
       cart = add_greentea_to_cart(cart, 5)
 
       # when
-      result = BuyOneGetOneFreeGreentea.apply(cart)
+      result = BuyOneGetOneFreeGreenTea.apply(cart)
 
       # then, two greentea is free
       expected_discount = 2 * 3.11
@@ -62,7 +62,7 @@ defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenteaTest do
         |> add_strawberry_to_cart(2)
 
       # when
-      result = BuyOneGetOneFreeGreentea.apply(cart)
+      result = BuyOneGetOneFreeGreenTea.apply(cart)
 
       # then, four greentea is free
       expected_discount = 4 * 3.11

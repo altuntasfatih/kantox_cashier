@@ -4,7 +4,8 @@ defmodule KantoxCashier.Application do
   @spec start(any(), any()) :: {:error, any()} | {:ok, pid()}
   def start(_type, _args) do
     children = [
-      {Registry, keys: :unique, name: KantoxCashier.ShoppingCart.CartRegistry},
+      {KantoxCashier.ShoppingCart.CartRegistry, []},
+      # no need module
       {DynamicSupervisor, name: KantoxCashier.ShoppingCart.CartDynamicSupervisor}
     ]
 

@@ -1,4 +1,4 @@
-defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreentea do
+defmodule KantoxCashier.Campaign.BuyOneGetOneFreeGreenTea do
   @behaviour KantoxCashier.Campaign.Behaviour
 
   alias KantoxCashier.Campaign.Behaviour

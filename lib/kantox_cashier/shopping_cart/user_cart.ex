@@ -1,35 +1,25 @@
 defmodule KantoxCashier.ShoppingCart.UserCart do
   @moduledoc """
-  GenServer managing individual user shopping cart state.
+  GenServer managing individual user cart state.
 
-  ## Production Considerations
+  For production deployment, consider adding persistence:
+  - **Database (Ecto)**: Best for data durability across deployments
+  - **Mnesia**: Distributed but complex for simple carts
 
-  # todo, think about adding persistence layer
-  # option 1: use Ecto
-  # pros: a very solid choice, save us
-  # cons: External dependency,
+  Current in-memory approach is suitable for:
+  - Development/testing
+  - Stateless applications
+  - When cart data loss is acceptable
 
-  # option 2: use ETS
-  # pros: easy peasy, for temproray processes crash would save us
-  # cons: during deployment we lose the data because ets tables are tied to specific node,
-  # cons: does not support cross node replication
-
-  # option 3: use Distributed ETS(Mnesia)
-  # pros: distributed,
-  # cons: it is complex for simple shopping cart
-
-  # option 4: State Transfer  during deployment
-  # pros: i belive, it is too complex, what if we changed code and code
-
-
-
+  Current implementation focuses on OTP patterns and clean architecture
   """
 
   use GenServer
   alias KantoxCashier.ShoppingCart.CartProcessor
+  alias KantoxCashier.ShoppingCart.CartRegistry
 
   def start_link(user_id) do
-    GenServer.start_link(__MODULE__, user_id, name: via_tuple(user_id))
+    GenServer.start_link(__MODULE__, user_id, name: CartRegistry.via_tuple({__MODULE__, user_id}))
   end
 
   def init(user_id) do
@@ -52,9 +42,5 @@ defmodule KantoxCashier.ShoppingCart.UserCart do
 
   def handle_call({:preview}, _from, cart) do
     {:reply, CartProcessor.preview(cart), cart}
-  end
-
-  defp via_tuple(user_id) do
-    {:via, Registry, {KantoxCashier.ShoppingCart.CartRegistry, {__MODULE__, user_id}}}
   end
 end

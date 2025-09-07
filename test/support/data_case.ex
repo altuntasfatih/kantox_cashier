@@ -8,7 +8,7 @@ defmodule KantoxCashier.DataCase do
     quote do
       alias KantoxCashier.Campaign.BulkPurchaseCoffee
       alias KantoxCashier.Campaign.BulkPurchaseStrawberry
-      alias KantoxCashier.Campaign.BuyOneGetOneFreeGreentea
+      alias KantoxCashier.Campaign.BuyOneGetOneFreeGreenTea
 
       alias KantoxCashier.Item
       alias KantoxCashier.ShoppingCart.Cart
