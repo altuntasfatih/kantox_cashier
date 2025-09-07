@@ -24,10 +24,8 @@ defmodule KantoxCashier.ShoppingCart.Cart do
   end
 
   def add_item(%__MODULE__{basket: basket} = cart, %Item{} = item) do
-    case Map.get(basket, item.code) do
-      nil -> %__MODULE__{cart | basket: Map.put(basket, item.code, {1, item})}
-      {count, _} -> %__MODULE__{cart | basket: Map.put(basket, item.code, {count + 1, item})}
-    end
+    basket = Map.update(basket, item.code, {1, item}, fn {count, _} -> {count + 1, item} end)
+    %__MODULE__{cart | basket: basket}
   end
 
   def remove_item(%__MODULE__{basket: basket} = cart, item_code) do

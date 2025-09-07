@@ -2,6 +2,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
   alias KantoxCashier.Item
   alias KantoxCashier.ShoppingCart.Cart
 
+  @precision 2
+
   def create_shopping_cart(user_id) when is_integer(user_id), do: Cart.new(user_id)
 
   def add_item(cart, %Item{} = item) do
@@ -23,7 +25,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
           name: Item.code_to_string(code),
           count: count,
           price: price,
-          total: Float.round(count * price, 2)
+          total: round_currency(count * price)
         }
       end)
 
@@ -49,27 +51,10 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
 
   defp calculate(%Cart{basket: basket} = cart) when basket == %{}, do: cart
 
-  defp calculate(%Cart{basket: basket, campaigns: []} = cart) do
-    basket_amount =
-      basket
-      |> Enum.map(fn {_code, {count, %Item{price: price}}} -> count * price end)
-      |> Enum.sum()
-      |> Float.round(2)
-
-    %Cart{cart | basket_amount: basket_amount, final_amount: basket_amount}
-  end
-
-  defp calculate(%Cart{basket: basket, campaigns: campaigns} = cart) do
-    basket_amount =
-      basket
-      |> Enum.map(fn {_code, {count, %Item{price: price}}} -> count * price end)
-      |> Enum.sum()
-      |> Float.round(2)
-
-    campaigns_amount =
-      Enum.sum_by(campaigns, fn {_, campaign_amount} -> campaign_amount end) |> Float.round(2)
-
-    final_amount = Float.round(basket_amount - campaigns_amount, 2)
+  defp calculate(%Cart{} = cart) do
+    basket_amount = calculate_basket_total(cart.basket)
+    campaigns_amount = calculate_campaigns_total(cart.campaigns)
+    final_amount = round_currency(basket_amount - campaigns_amount)
 
     %Cart{
       cart
@@ -79,18 +64,44 @@ defmodule KantoxCashier.ShoppingCart.CartProcessor do
     }
   end
 
+  defp calculate_basket_total(basket) do
+    basket
+    |> Enum.map(fn {_code, {count, %Item{price: price}}} -> count * price end)
+    |> Enum.sum()
+    |> round_currency()
+  end
+
+  defp calculate_campaigns_total([]), do: 0.0
+
+  defp calculate_campaigns_total(campaigns) do
+    campaigns
+    |> Enum.sum_by(fn {_, amount} -> amount end)
+    |> round_currency()
+  end
+
   defp apply_campaigns(cart) do
     load_campaigns()
-    |> Enum.reduce(cart, fn campaign, cart -> campaign.apply(cart) end)
+    |> Enum.reduce(cart, fn campaign, acc_cart ->
+      campaign.apply(acc_cart)
+    end)
   end
 
   defp reset_calculations(cart) do
-    %Cart{cart | campaigns: [], final_amount: 0.0, basket_amount: 0.0, campaigns_amount: 0.0}
+    %Cart{
+      cart
+      | campaigns: [],
+        final_amount: 0.0,
+        basket_amount: 0.0,
+        campaigns_amount: 0.0
+    }
   end
 
+  defp round_currency(amount), do: Float.round(amount, @precision)
+
   defp load_campaigns do
-    Application.get_env(:kantox_cashier, :campaigns, [])
+    :kantox_cashier
+    |> Application.get_env(:campaigns, [])
     |> Enum.map(fn {module_name, _opts} -> module_name end)
-    |> Enum.filter(fn c -> c.enabled?() end)
+    |> Enum.filter(& &1.enabled?())
   end
 end

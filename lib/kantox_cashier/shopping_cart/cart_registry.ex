@@ -8,11 +8,11 @@ defmodule KantoxCashier.ShoppingCart.CartRegistry do
     )
   end
 
-  @spec where_is(integer()) :: {:error, :process_is_not_alive} | {:ok, pid()}
+  @spec where_is(integer()) :: {:error, :cart_not_found} | {:ok, pid()}
   def where_is(user_id) when is_integer(user_id) do
     case Registry.lookup(__MODULE__, {UserCart, user_id}) do
       [{pid, _}] -> {:ok, pid}
-      [] -> {:error, :process_is_not_alive}
+      [] -> {:error, :cart_not_found}
     end
   end
 
