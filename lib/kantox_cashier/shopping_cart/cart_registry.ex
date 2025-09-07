@@ -5,6 +5,7 @@ defmodule KantoxCashier.ShoppingCart.CartRegistry do
     Registry.start_link(keys: :unique, name: __MODULE__)
   end
 
+  @spec create_shopping_cart(integer()) :: {:ok, pid()} | {:error, any()}
   def create_shopping_cart(user_id) do
     DynamicSupervisor.start_child(
       KantoxCashier.ShoppingCart.CartDynamicSupervisor,
