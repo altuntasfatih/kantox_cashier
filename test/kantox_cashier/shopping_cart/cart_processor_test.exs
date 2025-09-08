@@ -128,7 +128,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
     test "should calculate cart amount without campaigns", %{cart: cart} do
       # given
-      expected_basket_amount = @coffee.price + @green_tea.price
+      expected_basket_amount = (@coffee.price + @green_tea.price) |> Float.round(2)
       expected_campaigns_amount = 0.0
       expected_final_amount = expected_basket_amount
 

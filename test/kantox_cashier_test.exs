@@ -45,7 +45,7 @@ defmodule KantoxCashierTest do
                final_amount: basket_amount
              } == KantoxCashier.add_item(user_id, :CF1)
 
-      basket_amount = basket_amount + @strawberry.price
+      basket_amount = (basket_amount + @strawberry.price) |> Float.round(2)
 
       assert %Cart{
                user_id: user_id,
@@ -136,13 +136,21 @@ defmodule KantoxCashierTest do
       # given
       assert %{} = KantoxCashier.add_item(user_id, :CF1)
       assert %{} = KantoxCashier.add_item(user_id, :CF1)
+
       assert %{} = KantoxCashier.add_item(user_id, :SR1)
       assert %{} = KantoxCashier.add_item(user_id, :SR1)
       assert %{} = KantoxCashier.add_item(user_id, :SR1)
+
       assert %{} = KantoxCashier.add_item(user_id, :GR1)
       assert %{} = KantoxCashier.add_item(user_id, :GR1)
 
-      basket_amount = @coffee.price * 2 + @strawberry.price * 3 + @green_tea.price * 2
+      coffee_price_total = @coffee.price * 2
+      strawberry_price_total = @strawberry.price * 3
+      green_tea_price_total = @green_tea.price * 2
+
+      basket_amount =
+        (coffee_price_total + strawberry_price_total + green_tea_price_total) |> Float.round(2)
+
       campaigns_amount = 4.61
       final_amount = basket_amount - campaigns_amount
 
@@ -150,18 +158,18 @@ defmodule KantoxCashierTest do
       assert %{
                user_id: user_id,
                basket_summary: [
-                 %{name: "Coffee", count: 2, price: @coffee.price, total: 2 * @coffee.price},
+                 %{name: "Coffee", count: 2, price: @coffee.price, total: coffee_price_total},
                  %{
                    name: "Strawberry",
                    count: 3,
                    price: @strawberry.price,
-                   total: 3 * @strawberry.price
+                   total: strawberry_price_total
                  },
                  %{
                    name: "Green Tea",
                    count: 2,
                    price: @green_tea.price,
-                   total: 2 * @green_tea.price
+                   total: green_tea_price_total
                  }
                ],
                campaigns_summary: [
