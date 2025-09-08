@@ -1,6 +1,6 @@
 # KantoxCashier
 
-A shopping cart system with campaign 
+A shopping cart system with campaign support for e-commerce applications.
 
 ## Features
 
@@ -29,6 +29,14 @@ KantoxCashier.preview(user_id)
 # Get current state of cart 
 KantoxCashier.get_cart(user_id)
 ```
+
+## Tests
+
+```elixir
+mix test
+```
+
+The `test/kantox_cashier/shopping_cart/cart_campaign_integration_test.exs` file contains comprehensive scenarios demonstrating how different item combinations trigger various campaigns. 
 
 ## Available Campaigns
 
