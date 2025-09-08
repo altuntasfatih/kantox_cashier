@@ -34,14 +34,18 @@ defmodule KantoxCashierTest do
     end
 
     test "should add items to cart", %{user_id: user_id} do
+      basket_amount = @coffee.price
+
       assert %Cart{
                user_id: user_id,
                basket: %{CF1: {1, @coffee}},
-               basket_amount: @coffee.price,
+               basket_amount: basket_amount,
                campaigns: [],
                campaigns_amount: 0.0,
-               final_amount: @coffee.price
+               final_amount: basket_amount
              } == KantoxCashier.add_item(user_id, :CF1)
+
+      basket_amount = basket_amount + @strawberry.price
 
       assert %Cart{
                user_id: user_id,
@@ -50,10 +54,12 @@ defmodule KantoxCashierTest do
                  CF1: {1, @coffee},
                  SR1: {1, @strawberry}
                },
-               basket_amount: 16.23,
+               basket_amount: basket_amount,
                campaigns_amount: 0.0,
-               final_amount: 16.23
+               final_amount: basket_amount
              } == KantoxCashier.add_item(user_id, :SR1)
+
+      basket_amount = basket_amount + @green_tea.price
 
       assert %Cart{
                user_id: user_id,
@@ -63,9 +69,9 @@ defmodule KantoxCashierTest do
                  GR1: {1, @green_tea},
                  SR1: {1, @strawberry}
                },
-               basket_amount: 19.34,
+               basket_amount: basket_amount,
                campaigns_amount: 0.0,
-               final_amount: 19.34
+               final_amount: basket_amount
              } == KantoxCashier.add_item(user_id, :GR1)
     end
 
@@ -136,22 +142,36 @@ defmodule KantoxCashierTest do
       assert %{} = KantoxCashier.add_item(user_id, :GR1)
       assert %{} = KantoxCashier.add_item(user_id, :GR1)
 
+      basket_amount = @coffee.price * 2 + @strawberry.price * 3 + @green_tea.price * 2
+      campaigns_amount = 4.61
+      final_amount = basket_amount - campaigns_amount
+
       # when & then
       assert %{
-               user_id: ^user_id,
+               user_id: user_id,
                basket_summary: [
-                 %{name: "Coffee", count: 2, price: 11.23, total: 22.46},
-                 %{name: "Strawberry", count: 3, price: 5.0, total: 15.0},
-                 %{name: "Green Tea", count: 2, price: 3.11, total: 6.22}
+                 %{name: "Coffee", count: 2, price: @coffee.price, total: 2 * @coffee.price},
+                 %{
+                   name: "Strawberry",
+                   count: 3,
+                   price: @strawberry.price,
+                   total: 3 * @strawberry.price
+                 },
+                 %{
+                   name: "Green Tea",
+                   count: 2,
+                   price: @green_tea.price,
+                   total: 2 * @green_tea.price
+                 }
                ],
                campaigns_summary: [
                  %{campaigns_amount: 3.11, campaign_name: "Buy One Get One Free Green Tea"},
                  %{campaigns_amount: 1.5, campaign_name: "Bulk Purchase Strawberry"}
                ],
-               basket_amount: 43.68,
-               campaigns_amount: 4.61,
-               final_amount: 39.07
-             } = KantoxCashier.preview(user_id)
+               basket_amount: basket_amount,
+               campaigns_amount: campaigns_amount,
+               final_amount: final_amount
+             } == KantoxCashier.preview(user_id)
     end
 
     test "should return cart not found error", _ do

@@ -225,7 +225,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
     test "should preview cart with basket and campaign", %{cart: cart} do
       # given
-      basket_amount = @strawberry.price * 3
+      strawberry_count = 3
+      basket_amount = @strawberry.price * strawberry_count
       campaigns_amount = 1.5
       final_amount = basket_amount - campaigns_amount
 
@@ -241,9 +242,9 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                basket_summary: [
                  %{
                    name: "Strawberry",
-                   count: 3,
-                   price: 5.0,
-                   total: 15.0
+                   count: strawberry_count,
+                   price: @strawberry.price,
+                   total: basket_amount
                  }
                ],
                basket_amount: basket_amount,
