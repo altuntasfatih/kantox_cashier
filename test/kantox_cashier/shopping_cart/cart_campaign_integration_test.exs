@@ -133,9 +133,9 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}},
-                 GR1: {3, %Item{code: :GR1, price: 3.11}},
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 CF1: {1, @coffee},
+                 GR1: {3, @green_tea},
+                 SR1: {1, @strawberry}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -160,7 +160,7 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 GR1: {2, %Item{code: :GR1, price: 3.11}}
+                 GR1: {2, @green_tea}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -185,8 +185,8 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 GR1: {1, %Item{code: :GR1, price: 3.11}},
-                 SR1: {3, %Item{code: :SR1, price: 5.0}}
+                 GR1: {1, @green_tea},
+                 SR1: {3, @strawberry}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -212,9 +212,9 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       assert %Cart{
                user_id: @user_id,
                basket: %{
-                 CF1: {3, %Item{code: :CF1, price: 11.23}},
-                 GR1: {1, %Item{code: :GR1, price: 3.11}},
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 CF1: {3, @coffee},
+                 GR1: {1, @green_tea},
+                 SR1: {1, @strawberry}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -239,9 +239,9 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {3, %Item{code: :CF1, price: 11.23}},
-                 GR1: {2, %Item{code: :GR1, price: 3.11}},
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 CF1: {3, @coffee},
+                 GR1: {2, @green_tea},
+                 SR1: {1, @strawberry}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -266,8 +266,8 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 GR1: {2, %Item{code: :GR1, price: 3.11}},
-                 SR1: {3, %Item{code: :SR1, price: 5.0}}
+                 GR1: {2, @green_tea},
+                 SR1: {3, @strawberry}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -292,9 +292,9 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {3, %Item{code: :CF1, price: 11.23}},
-                 GR1: {2, %Item{code: :GR1, price: 3.11}},
-                 SR1: {3, %Item{code: :SR1, price: 5.0}}
+                 CF1: {3, @coffee},
+                 GR1: {2, @green_tea},
+                 SR1: {3, @strawberry}
                },
                campaigns: ^expected_campaigns,
                basket_amount: ^expected_basket_amount,
@@ -319,9 +319,9 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}},
-                 GR1: {1, %Item{code: :GR1, price: 3.11}},
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 CF1: {1, @coffee},
+                 GR1: {1, @green_tea},
+                 SR1: {1, @strawberry}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -346,7 +346,7 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 GR1: {1, %Item{code: :GR1, price: 3.11}}
+                 GR1: {1, @green_tea}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -371,7 +371,7 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}}
+                 CF1: {1, @coffee}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,
@@ -396,7 +396,7 @@ defmodule KantoxCashier.ShoppingCart.CartCampaignIntegrationTest do
       # when & then
       assert %Cart{
                basket: %{
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 SR1: {1, @strawberry}
                },
                basket_amount: ^expected_basket_amount,
                campaigns: ^expected_campaigns,

@@ -4,6 +4,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
   alias KantoxCashier.ShoppingCart.CartProcessor
 
   @user_id 1
+
   describe "create_shopping_cart/1" do
     test "should create shopping cart" do
       assert CartProcessor.create_shopping_cart(@user_id) == %Cart{
@@ -24,41 +25,41 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     end
 
     test "should add items to cart", %{cart: cart} do
-      cart = CartProcessor.add_item(cart, Item.coffee())
+      cart = CartProcessor.add_item(cart, @coffee)
 
       assert %Cart{
-               basket: %{CF1: {1, %Item{code: :CF1, price: 11.23}}}
+               basket: %{CF1: {1, @coffee}}
              } = cart
 
-      cart = CartProcessor.add_item(cart, Item.strawberry())
+      cart = CartProcessor.add_item(cart, @strawberry)
 
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}},
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 CF1: {1, @coffee},
+                 SR1: {1, @strawberry}
                },
                campaigns: []
              } = cart
 
-      cart = CartProcessor.add_item(cart, Item.green_tea())
+      cart = CartProcessor.add_item(cart, @green_tea)
 
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}},
-                 GR1: {1, %Item{code: :GR1, price: 3.11}},
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 CF1: {1, @coffee},
+                 GR1: {1, @green_tea},
+                 SR1: {1, @strawberry}
                },
                campaigns: []
              } = cart
 
       assert %Cart{
                basket: %{
-                 CF1: {2, %Item{code: :CF1, price: 11.23}},
-                 GR1: {1, %Item{code: :GR1, price: 3.11}},
-                 SR1: {1, %Item{code: :SR1, price: 5.0}}
+                 CF1: {2, @coffee},
+                 GR1: {1, @green_tea},
+                 SR1: {1, @strawberry}
                },
                campaigns: []
-             } = CartProcessor.add_item(cart, Item.coffee())
+             } = CartProcessor.add_item(cart, @coffee)
     end
   end
 
@@ -66,8 +67,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
     setup do
       cart =
         CartProcessor.create_shopping_cart(@user_id)
-        |> CartProcessor.add_item(Item.coffee())
-        |> CartProcessor.add_item(Item.green_tea())
+        |> CartProcessor.add_item(@coffee)
+        |> CartProcessor.add_item(@green_tea)
 
       {:ok, cart: cart, user_id: @user_id}
     end
@@ -76,7 +77,7 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}}
+                 CF1: {1, @coffee}
                },
                campaigns: []
              } = CartProcessor.remove_item(cart, :GR1)
@@ -100,8 +101,8 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
       # when & then
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}},
-                 GR1: {1, %Item{code: :GR1, price: 3.11}}
+                 CF1: {1, @coffee},
+                 GR1: {1, @green_tea}
                },
                campaigns: []
              } =
@@ -127,42 +128,56 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
 
     test "should calculate cart amount without campaigns", %{cart: cart} do
       # given
-      cart =
-        CartProcessor.add_item(cart, Item.coffee())
-        |> CartProcessor.add_item(Item.green_tea())
+      expected_basket_amount = @coffee.price + @green_tea.price
+      expected_campaigns_amount = 0.0
+      expected_final_amount = expected_basket_amount
 
+      # when
+      cart =
+        CartProcessor.add_item(cart, @coffee)
+        |> CartProcessor.add_item(@green_tea)
+
+      # then
       assert %Cart{
                basket: %{
-                 CF1: {1, %Item{code: :CF1, price: 11.23}},
-                 GR1: {1, %Item{code: :GR1, price: 3.11}}
+                 CF1: {1, @coffee},
+                 GR1: {1, @green_tea}
                },
                campaigns: [],
-               basket_amount: 14.34,
-               campaigns_amount: 0.0,
-               final_amount: 14.34,
+               basket_amount: expected_basket_amount,
+               campaigns_amount: expected_campaigns_amount,
+               final_amount: expected_final_amount,
                user_id: @user_id
              } == CartProcessor.checkout(cart)
     end
 
-    test "should calculate cart amount with campaigns", %{cart: cart} do
-      cart =
-        CartProcessor.add_item(cart, Item.green_tea())
-        |> CartProcessor.add_item(Item.green_tea())
+    test "should calculate cart amount with campaign", %{cart: cart} do
+      # given
+      expected_basket_amount = @green_tea.price * 2
+      expected_campaigns_amount = 3.11
+      campaings = [{"Buy One Get One Free Green Tea", expected_campaigns_amount}]
+      expected_final_amount = expected_basket_amount - expected_campaigns_amount
 
+      # when
+      cart =
+        CartProcessor.add_item(cart, @green_tea)
+        |> CartProcessor.add_item(@green_tea)
+
+      # then
       assert %Cart{
                user_id: @user_id,
-               basket: %{GR1: {2, %Item{code: :GR1, price: 3.11}}},
-               campaigns: [{"Buy One Get One Free Green Tea", 3.11}],
-               basket_amount: 6.22,
-               campaigns_amount: 3.11,
-               final_amount: 3.11
+               basket: %{GR1: {2, @green_tea}},
+               campaigns: campaings,
+               basket_amount: expected_basket_amount,
+               campaigns_amount: expected_campaigns_amount,
+               final_amount: expected_final_amount
              } == CartProcessor.checkout(cart)
     end
   end
 
   describe "preview/1" do
     setup do
-      {:ok, cart: CartProcessor.create_shopping_cart(@user_id), user_id: @user_id}
+      {:ok, cart: CartProcessor.create_shopping_cart(@user_id)}
     end
 
     test "should preview empty cart", %{cart: cart} do
@@ -176,11 +191,13 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
              } == CartProcessor.preview(cart)
     end
 
-    test "should preview cart with basket and no campaigns", %{cart: cart} do
+    test "should preview cart with basket and no campaign", %{cart: cart} do
       # given
+      basket_amount = @coffee.price + @green_tea.price
+
       cart =
-        CartProcessor.add_item(cart, Item.coffee())
-        |> CartProcessor.add_item(Item.green_tea())
+        CartProcessor.add_item(cart, @coffee)
+        |> CartProcessor.add_item(@green_tea)
 
       # when & then
       assert %{
@@ -199,21 +216,26 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                    total: 3.11
                  }
                ],
-               basket_amount: 14.34,
+               basket_amount: basket_amount,
                campaigns_summary: [],
                campaigns_amount: 0.0,
-               final_amount: 14.34
+               final_amount: basket_amount
              } == CartProcessor.preview(cart)
     end
 
-    test "should preview cart with basket and campaigns", %{cart: cart} do
+    test "should preview cart with basket and campaign", %{cart: cart} do
       # given
-      cart =
-        CartProcessor.add_item(cart, Item.strawberry())
-        |> CartProcessor.add_item(Item.strawberry())
-        |> CartProcessor.add_item(Item.strawberry())
+      basket_amount = @strawberry.price * 3
+      campaigns_amount = 1.5
+      final_amount = basket_amount - campaigns_amount
 
-      # when & then
+      # when
+      cart =
+        CartProcessor.add_item(cart, @strawberry)
+        |> CartProcessor.add_item(@strawberry)
+        |> CartProcessor.add_item(@strawberry)
+
+      # then
       assert %{
                user_id: @user_id,
                basket_summary: [
@@ -224,15 +246,15 @@ defmodule KantoxCashier.ShoppingCart.CartProcessorTest do
                    total: 15.0
                  }
                ],
-               basket_amount: 15.0,
+               basket_amount: basket_amount,
                campaigns_summary: [
                  %{
                    campaign_name: "Bulk Purchase Strawberry",
-                   campaigns_amount: 1.5
+                   campaigns_amount: campaigns_amount
                  }
                ],
-               campaigns_amount: 1.5,
-               final_amount: 13.5
+               campaigns_amount: campaigns_amount,
+               final_amount: final_amount
              } == CartProcessor.preview(cart)
     end
   end

@@ -14,6 +14,10 @@ defmodule KantoxCashier.DataCase do
       alias KantoxCashier.ShoppingCart.Cart
 
       import KantoxCashier.DataCase
+
+      @coffee Item.coffee()
+      @green_tea Item.green_tea()
+      @strawberry Item.strawberry()
     end
   end
 
