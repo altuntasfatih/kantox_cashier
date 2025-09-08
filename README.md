@@ -1,20 +1,37 @@
 # KantoxCashier
 
-**TODO: Add description**
+A shopping cart system with campaign 
 
-## Installation
+## Features
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `kantox_cashier` to your list of dependencies in `mix.exs`:
+- **Shopping Cart Management**: Add/remove items, calculate totals
+- **Campaign System**: Automatic discount application (BOGO, bulk purchase)
+- **Item Catalog**: Coffee, Green Tea, Strawberry with configurable pricing
+- **Cart Preview**: Detailed breakdown of items, campaigns, and totals
+
+## Usage
 
 ```elixir
-def deps do
-  [
-    {:kantox_cashier, "~> 0.1.0"}
-  ]
-end
+# Create and manage shopping carts
+user_id = 123
+
+# Add items to cart
+KantoxCashier.add_item(user_id, :CF1)  # Coffee
+KantoxCashier.add_item(user_id, :GR1)  # Green Tea
+KantoxCashier.add_item(user_id, :SR1)  # Strawberry
+
+# Remove items
+KantoxCashier.remove_item(user_id, :CF1)
+
+# Preview cart with campaign summary
+KantoxCashier.preview(user_id)
+
+# Get current state of cart 
+KantoxCashier.get_cart(user_id)
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/kantox_cashier>.
+## Available Campaigns
+
+- **Buy One Get One Free Green Tea**: Get second green tea free
+- **Bulk Purchase Coffee**: Discount on 3+ coffee items  
+- **Bulk Purchase Strawberry**: Discount on 3+ strawberry items

@@ -6,7 +6,6 @@ defmodule KantoxCashier do
   including adding/removing items and previewing cart contents.
 
   ## Examples
-
       # Add items to a user's cart, returns updated cart, if not exists creates a new cart
       KantoxCashier.add_item(123, :CF1)
       KantoxCashier.add_item(123, :GR1)
